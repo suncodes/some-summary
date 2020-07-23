@@ -8,7 +8,9 @@ https://maven.apache.org/pom.html
 
 https://blog.csdn.net/kangsa998/article/details/103189100
 
+https://www.runoob.com/maven/maven-pom.html
 
+https://wiki.jikexueyuan.com/project/maven/pom.html
 
 在IDEA中，右键pom文件，选择SHOW Effective POM 就能看到目前pom文件的默认设置。
 
