@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 声明一个bean，这里只是单纯声明，并没有进行赋值 -->
+    <bean id="user" class="sun.ioc.bo.UserBO" />
+    <!-- 此处也没有引用UserBO，只是单纯用于创建一个UserService类 -->
+    <bean id="userService" class="sun.ioc.service.UserService" />
+
+    <!-- 声明另一个bean，并给自己的属性赋值，属性不包括‘自定义引用类型’ -->
+    <bean id="beanProperty" class="sun.ioc.bo.UserBO">
+
+    </bean>
+
+    <!-- 声明另一个bean，并给自己的属性赋值，属性包含各种类型 -->
+</beans>
