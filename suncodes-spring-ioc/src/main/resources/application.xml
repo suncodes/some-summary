@@ -13,5 +13,28 @@
 
     </bean>
 
-    <!-- 声明另一个bean，并给自己的属性赋值，属性包含各种类型 -->
+    <!-- 【重要】声明另一个bean，并给自己的属性赋值，属性包含各种类型 -->
+    <!-- 整形 setter方式注入-->
+    <bean id="intIntUnPackage" class="sun.ioc.bean.IntegerBean">
+        <!-- Integer -->
+        <property name="age" value="18"/>
+        <!-- int -->
+        <property name="id" value="1"/>
+        <!-- long -->
+        <property name="length" value="12132"/>
+        <property name="aShort" value="1">
+            <description>asasasasas</description>
+        </property>
+    </bean>
+
+    <!-- 整形 构造方法方式注入-->
+    <bean id="intIntPackageConstructor" class="sun.ioc.bean.IntegerConstructorBean">
+        <constructor-arg name="id" value="2"/>
+        <constructor-arg name="age" value="19"/>
+        <constructor-arg name="time" value="123456788"/>
+        <constructor-arg name="length" value="123456789"/>
+        <constructor-arg name="aShort" value="12345"/>
+        <!-- 构造函数属性的索引位置 -->
+        <constructor-arg index="5" value="12346"/>
+    </bean>
 </beans>
