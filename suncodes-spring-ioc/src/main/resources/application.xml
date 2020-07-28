@@ -37,4 +37,66 @@
         <!-- 构造函数属性的索引位置 -->
         <constructor-arg index="5" value="12346"/>
     </bean>
+
+    <bean id="string" class="sun.ioc.bean.StringBean">
+        <property name="string">
+            <idref bean="intIntPackageConstructor"/>
+        </property>
+    </bean>
+
+    <!-- 浮点型 begin -->
+    <bean id="aFloat" class="sun.ioc.bean.FloatBean">
+        <property name="AFloat" value="1.1"/>
+        <property name="AFloatF" value="1.1"/>
+        <property name="ADouble" value="1.1"/>
+        <property name="ADoubleD" value="1.1"/>
+    </bean>
+
+    <bean id="floatConstructorBean" class="sun.ioc.bean.FloatConstructorBean">
+        <constructor-arg index="0" value="1.2"/>
+        <constructor-arg index="1" value="1.2"/>
+        <constructor-arg index="2" value="1.2"/>
+        <constructor-arg index="3" value="1.2"/>
+<!--        <constructor-arg index="4" value="0"/>-->
+        <constructor-arg index="4" value="false"/>
+    </bean>
+    <!-- 浮点型 end -->
+
+    <!-- 字符型 begin [重要] -->
+    <!-- 方式1 -->
+    <bean id="stringBean" class="sun.ioc.bean.StringBean">
+        <property name="string">
+            <idref bean="intIntPackageConstructor"/>
+        </property>
+        <property name="stringBuffer" value="直接使用字符串赋值stringBuffer可以吗，运行完发现是可以的"/>
+        <property name="stringBuilder" value="直接使用字符串赋值stringBuilder可以吗，运行完发现是可以的"/>
+        <property name="aChar" value="a"/>
+        <property name="character" value="a"/>
+    </bean>
+    <!-- 方式2 -->
+    <bean id="stringBuffer" class="java.lang.StringBuffer">
+        <constructor-arg name="str" value="使用StringBuffer的构造函数初始化"/>
+    </bean>
+    <bean id="stringBean1" class="sun.ioc.bean.StringBean">
+        <property name="string">
+            <idref bean="intIntPackageConstructor"/>
+        </property>
+        <property name="stringBuffer" ref="stringBuffer"/>
+        <property name="stringBuilder" value="直接使用字符串赋值stringBuilder可以吗，运行完发现是可以的"/>
+        <!-- char类型是直接可以赋值的 -->
+        <property name="aChar" value="a"/>
+        <property name="character" value="了"/>
+        <!-- byte类型赋值在0-127之间 -->
+        <property name="aByte" value="0"/>
+        <property name="aByteB" value="127"/>
+    </bean>
+
+    <bean id="stringBean2" class="sun.ioc.bean.StringConstructorBean">
+        <constructor-arg index="0" value="0"/>
+        <constructor-arg index="1" value="1"/>
+        <constructor-arg index="2" value="2"/>
+        <constructor-arg index="3" value="a"/>
+        <constructor-arg index="4" value="b"/>
+    </bean>
+    <!-- 字符型 end -->
 </beans>

@@ -1,4 +1,4 @@
-package bean;
+package sun.ioc.bean;
 
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
