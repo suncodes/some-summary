@@ -9,9 +9,10 @@
     <packaging>pom</packaging>
     <version>1.0.0</version>
     <modules>
-        <module>suncodes-springboot-ioc</module>
-        <module>suncodes-spring-ioc</module>
+        <module>01-properties-summary</module>
+        <module>02-assembly-summary</module>
     </modules>
+
 
     <properties>
         <java.version>1.8</java.version>
@@ -28,7 +29,19 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
+            <!--<scope>runtime</scope>-->
+            <!--<scope>provided</scope>-->
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.6</version>
         </dependency>
     </dependencies>
 

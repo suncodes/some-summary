@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>suncodes-summary</artifactId>
+        <groupId>suncodes</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>01-properties-summary</artifactId>
+
+    <properties>
+        <!-- 内置属性 -->
+        <这是版本>${version}</这是版本>
+        <这是版本的另外一种写法>${project.version}</这是版本的另外一种写法>
+
+        <这是项目路径>${basedir}</这是项目路径>
+        <这是项目路径的另外一种写法>${project.basedir}</这是项目路径的另外一种写法>
+
+        <构建时间>${maven.build.timestamp}</构建时间>
+
+        <!-- pom属性 均是以project开头 -->
+        <工程源文件编码>>${project.build.sourceEncoding}</工程源文件编码>
+        <报告输出编码>>${project.reporting.outputEncoding}</报告输出编码>
+
+        <!-- 目录相关 -->
+        <!-- <build>
+            <directory>${project.basedir}/target</directory>
+            <outputDirectory>${project.build.directory}/classes</outputDirectory>
+            <testOutputDirectory>${project.build.directory}/test-classes</testOutputDirectory>
+            <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+            <scriptSourceDirectory>${project.basedir}/src/main/scripts</scriptSourceDirectory>
+            <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
+            <resources>
+                <resource>
+                    <directory>${project.basedir}/src/main/resources</directory>
+                </resource>
+            </resources>
+            <testResources>
+                <testResource>
+                    <directory>${project.basedir}/src/test/resources</directory>
+                </testResource>
+            </testResources>
+            </build>
+            <reporting>
+                <finalName>${project.artifactId}-${project.version}</finalName>
+                <outputDirectory>${project.build.directory}/site</outputDirectory>
+            </reporting>
+        -->
+        <工程编译输出目录>${project.build.directory}</工程编译输出目录>
+        <源码编译class文件输出目录>${project.build.outputDirectory}</源码编译class文件输出目录>
+        <test编译class文件输出目录>${project.build.testOutputDirectory}</test编译class文件输出目录>
+        <源码目录>${project.build.sourceDirectory}</源码目录>
+        <脚本目录>${project.build.scriptSourceDirectory}</脚本目录>
+        <test源码目录>${project.build.testSourceDirectory}</test源码目录>
+
+        <源码资源源文件>因为是复数形式的，所以没有？</源码资源源文件>
+        <test资源源文件>因为是复数形式的，所以没有？</test资源源文件>
+
+        <报告输出目录>${project.reporting.outputDirectory}</报告输出目录>
+
+        <工程groupId>${project.groupId}</工程groupId>
+        <工程artifactId>${project.artifactId}</工程artifactId>
+        <工程version>${project.version}</工程version>
+        <工程打包名>${project.build.finalName}</工程打包名>
+
+        <!-- 子pom属性，父pom都有 -->
+        <父级工程groupId>${project.parent.groupId}</父级工程groupId>
+        <父级工程artifactId>${project.parent.artifactId}</父级工程artifactId>
+        <父级工程version>${project.parent.version}</父级工程version>
+        <工程打包名>${project.parent.build.finalName}</工程打包名>
+        <!--<等等其他>${pom.parent.relativePath}</等等其他>>-->
+
+        <还有很多>${project.name}</还有很多>
+
+        <!-- 四种属性 -->
+        <配置文件本地仓库>${settings.localRepository}</配置文件本地仓库>
+        <配置文件是否开启交互模式>${settings.interactiveMode}</配置文件是否开启交互模式>
+        <配置文件是否离线>${settings.offline}</配置文件是否离线>
+        <配置文件是否额外配置文件管理插件仓库>${settings.usePluginRegistry}</配置文件是否额外配置文件管理插件仓库>
+
+        <java开头>${java.home}</java开头>
+        <user开头>${user.home}</user开头>
+        <env开头>${env.PATH}</env开头>
+    </properties>
+</project>
