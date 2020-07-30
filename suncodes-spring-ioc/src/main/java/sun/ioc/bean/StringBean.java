@@ -1,5 +1,7 @@
 package sun.ioc.bean;
 
+import java.util.Objects;
+
 /**
  * 第三种：字符型
  */
@@ -52,5 +54,24 @@ public class StringBean {
                 ", aByte=" + aByte +
                 ", aByteB=" + aByteB +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StringBean that = (StringBean) o;
+        return aChar == that.aChar &&
+                aByte == that.aByte &&
+                Objects.equals(string, that.string) &&
+                Objects.equals(stringBuilder, that.stringBuilder) &&
+                Objects.equals(stringBuffer, that.stringBuffer) &&
+                Objects.equals(character, that.character) &&
+                Objects.equals(aByteB, that.aByteB);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(string, stringBuilder, stringBuffer, aChar, character, aByte, aByteB);
     }
 }

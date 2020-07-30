@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <import resource="classpath*:application.xml"/>
+    <import resource="classpath*:objectBean.xml"/>
+    <bean id="listBean" class="sun.ioc.bean.ListBean">
+        <property name="list">
+            <!-- 属性是list类型 -->
+            <!-- list中的类型是Object -->
+            <list value-type="java.lang.Object">
+                <value>list中的类型是Object</value>
+            </list>
+        </property>
+
+        <!-- List<String> -->
+        <property name="stringList">
+            <list value-type="java.lang.String">
+                <value>第一个值</value>
+                <value>第2个值</value>
+                <value>第3个值</value>
+            </list>
+        </property>
+
+        <!-- List<IntegerBean> -->
+        <property name="integerBeanList">
+            <list value-type="sun.ioc.bean.IntegerBean">
+                <bean class="sun.ioc.bean.IntegerBean">
+                    <!-- Integer -->
+                    <property name="age" value="18"/>
+                    <!-- int -->
+                    <property name="id" value="1"/>
+                    <!-- long -->
+                    <property name="length" value="12132"/>
+                    <property name="aShort" value="1">
+                        <description>asasasasas</description>
+                    </property>
+                </bean>
+                <ref bean="refInteger"/>
+            </list>
+        </property>
+
+        <!-- List<List<StringBean>> -->
+        <property name="listList">
+            <list>
+                <list>
+                    <ref bean="stringBean"/>
+                    <ref bean="string"/>
+                </list>
+                <list>
+                    <bean class="sun.ioc.bean.StringBean">
+                    </bean>
+                </list>
+            </list>
+        </property>
+    </bean>
+</beans>

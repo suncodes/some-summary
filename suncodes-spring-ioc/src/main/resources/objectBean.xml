@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 调用其他配置文件 -->
+    <import resource="application.xml"/>
+    <!-- 此文件用于练习 自定义bean的配置文件，以及配置文件互相引用 -->
+    <bean id="objectBean" class="sun.ioc.bean.ObjectBean">
+        <property name="string" value="这个单纯的字符串"/>
+
+        <!-- 第一种 -->
+        <property name="integerBean" ref="refInteger">
+            <description>这个是引用方式</description>
+        </property>
+
+        <!-- 第二种 -->
+        <property name="integerConstructorBean" ref="intIntPackageConstructor">
+            <description>这是引用其他配置文件的bean</description>
+        </property>
+
+        <!-- 第三种 -->
+        <property name="stringConstructorBean">
+            <!-- 嵌套bean，这时候id没意义了 -->
+            <bean id="s" class="sun.ioc.bean.StringConstructorBean">
+                <constructor-arg index="0" value="0"/>
+                <constructor-arg index="1" value="1"/>
+                <constructor-arg index="2" value="2"/>
+                <constructor-arg index="3" value="a"/>
+                <constructor-arg index="4" value="b"/>
+            </bean>
+        </property>
+    </bean>
+    <bean id="refInteger" class="sun.ioc.bean.IntegerBean"/>
+</beans>

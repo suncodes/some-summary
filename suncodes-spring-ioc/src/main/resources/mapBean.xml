@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--
+     map相关的
+     总结几点：
+     1.元素必须放到entry中
+     2.如果元素中key是基本类型，已有对象的引用，value是基本类型，已有对象的引用，可以直接作为entry属性使用
+     3.key标签用于map的key，其他平行标签就是map中value使用。
+     -->
+    <bean id="mapBean" class="sun.ioc.bean.MapBean">
+        <property name="stringStringMap">
+            <map>
+                <!-- 这个entry是完整的方式 -->
+                <entry>
+                    <key>
+                        <value>这是key</value>
+                    </key>
+                    <value>这是value</value>
+                </entry>
+                <!-- 这个entry是简化的方式 -->
+                <entry key="这个简化的key" value="这是简化的value"/>
+            </map>
+        </property>
+
+        <property name="stringIntegerBeanMap">
+            <map>
+                <entry>
+                    <key>
+                        <value>这个key</value>
+                    </key>
+                    <!-- 用于描述value值 -->
+                    <bean class="sun.ioc.bean.IntegerBean"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+</beans>

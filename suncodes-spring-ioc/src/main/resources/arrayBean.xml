@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <description>数组相关的bean</description>
+    <import resource="application.xml"/>
+    <import resource="listBean.xml"/>
+    <import resource="objectBean.xml"/>
+
+    <bean id="arrayBean" class="sun.ioc.bean.ArrayBean">
+        <!-- Integer[] -->
+        <property name="integers">
+            <array>
+                <value>1</value>
+                <value>2</value>
+                <value>3</value>
+            </array>
+        </property>
+
+        <!-- String[] -->
+        <property name="strings">
+            <array value-type="java.lang.String">
+                <value>这是字符串类型</value>
+            </array>
+        </property>
+
+        <!-- StringBean[] -->
+        <property name="stringBeans">
+            <array>
+                <ref bean="string"/>
+                <ref bean="stringBean"/>
+            </array>
+        </property>
+    </bean>
+</beans>
