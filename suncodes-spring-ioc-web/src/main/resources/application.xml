@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 【2】xml bean ==> xml config -->
+    <!-- 浮点型 begin -->
+    <bean id="aFloat" class="bean.FloatBean">
+        <property name="AFloat" value="1.1"/>
+        <property name="AFloatF" value="1.1"/>
+        <property name="ADouble" value="1.1"/>
+        <property name="ADoubleD" value="1.1"/>
+    </bean>
+    <!-- 【3】注解 bean ==> xml config -->
+    <context:component-scan base-package="annotation"/>
+    <!-- 【6】java config ==> xml config -->
+    <context:annotation-config />
+    <!-- 【7】xml config ==> xml config -->
+    <import resource="arrayBean.xml"/>
+</beans>

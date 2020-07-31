@@ -12,6 +12,7 @@
         <module>suncodes-springboot-ioc</module>
         <module>suncodes-spring-ioc</module>
         <module>suncodes-spring-ioc-java</module>
+        <module>suncodes-spring-ioc-web</module>
     </modules>
 
     <properties>
