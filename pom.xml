@@ -11,6 +11,7 @@
     <modules>
         <module>01-properties-summary</module>
         <module>02-assembly-summary</module>
+        <module>03-profile-summary</module>
     </modules>
 
 
@@ -58,4 +59,19 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>profile1</id>
+            <properties>
+                <profiles.active>dev1</profiles.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>profile3</id>
+            <properties>
+                <profiles.active>beta</profiles.active>
+            </properties>
+        </profile>
+    </profiles>
 </project>
