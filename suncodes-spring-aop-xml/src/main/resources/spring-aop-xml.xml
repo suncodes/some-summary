@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="dbService" class="service.DBService"/>
+    <bean id="logService" class="service.LogService"/>
+
+    <aop:config>
+        <!--定义切面-->
+        <aop:aspect ref="logService">
+            <!--定义切点-->
+            <aop:pointcut id="action" expression="execution(* *.*(..))"/>
+            <!-- 声明前置通知 (在切点方法被执行前调用)-->
+            <aop:before method="dbLog" pointcut-ref="action"/>
+            <!-- 声明后置通知 (在切点方法被执行后调用)-->
+            <aop:after method="dbLog" pointcut-ref="action"/>
+        </aop:aspect>
+    </aop:config>
+</beans>
