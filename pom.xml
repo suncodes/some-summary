@@ -14,6 +14,7 @@
         <module>suncodes-spring-ioc-java</module>
         <module>suncodes-spring-ioc-web</module>
         <module>suncodes-spring-aop-xml</module>
+        <module>suncodes-spring-aop-write</module>
     </modules>
 
     <properties>
