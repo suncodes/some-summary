@@ -2,8 +2,7 @@ package suncodes.DefaultAdvisorAutoProxyCreator;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import suncodes.DefaultAdvisorAutoProxyCreator.target.AOPTargetImpl;
-import suncodes.DefaultAdvisorAutoProxyCreator.target.AOPTargetInterface;
+import suncodes.DefaultAdvisorAutoProxyCreator.target1.AOPTargetImpl;
 
 public class AOPTest {
     public static void main(String[] args) {

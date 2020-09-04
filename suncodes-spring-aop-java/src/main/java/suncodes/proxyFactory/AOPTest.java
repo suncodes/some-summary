@@ -2,8 +2,8 @@ package suncodes.proxyFactory;
 
 import org.springframework.aop.framework.ProxyFactory;
 import suncodes.proxyFactory.advice.AOPAdvice;
-import suncodes.proxyFactory.target.AOPTargetImpl;
-import suncodes.proxyFactory.target.AOPTargetInterface;
+import suncodes.proxyFactory.target1.AOPTargetImpl;
+import suncodes.proxyFactory.target1.AOPTargetInterface;
 
 public class AOPTest {
     public static void main(String[] args) {

@@ -2,8 +2,7 @@ package suncodes.proxyFactoryBean;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import suncodes.proxyFactoryBean.target.AOPTargetImpl;
-import suncodes.proxyFactoryBean.target.AOPTargetInterface;
+import suncodes.proxyFactoryBean.target1.AOPTargetInterface;
 
 public class AOPTest {
     public static void main(String[] args) {
