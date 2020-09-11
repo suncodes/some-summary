@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean class="suncodes.DefaultAdvisorAutoProxyCreator.target2.SunImpl" id="sun"/>
+    <bean class="suncodes.DefaultAdvisorAutoProxyCreator.advice.AOPAdvice" id="aopAdvice" />
+    <bean class="suncodes.DefaultAdvisorAutoProxyCreator.advice.RegexAdvice" id="regexAdvice" />
+
+    <!-- 通过切面表达式，还需要多练，不太熟悉 -->
+    <bean class="org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor" id="pointcutAdvisor">
+        <property name="expression" value="execution(* suncodes.DefaultAdvisorAutoProxyCreator.target2.SunImpl.*(..))"/>
+        <property name="advice" ref="aopAdvice"/>
+    </bean>
+    <!-- 通过正则表达式 -->
+    <bean id="advisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="pattern">
+            <value>.*</value>  <!-- 业务实现方法名匹配 -->
+        </property>
+        <property name="advice" ref="regexAdvice" />
+    </bean>
+    <bean id="autoProxyCreator" class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" />
+</beans>
