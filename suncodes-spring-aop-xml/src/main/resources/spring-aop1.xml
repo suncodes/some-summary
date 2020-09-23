@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <bean id="dbService" class="service.DBService"/>
+    <bean id="logService" class="service.LogService"/>
+
+    <!-- aop配置（手动配置） -->
+    <!-- aop：config的含义就是 手动配置一个aop，并添加到bean工厂 -->
+    <aop:config>
+        <!-- 定义一个切面，这个是和aspectj相关的，而不是spring aop本身 -->
+        <aop:aspect ref="logService">
+            <!-- 定义切点 -->
+            <aop:pointcut id="a" expression="execution(* *.*(..))" />
+            <aop:before method="dbLog" pointcut-ref="a" />
+        </aop:aspect>
+    </aop:config>
+
+</beans>
