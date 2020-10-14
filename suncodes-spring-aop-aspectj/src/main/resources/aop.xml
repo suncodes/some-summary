@@ -4,6 +4,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
 
     <bean class="suncodes.service.TargetService" id="targetService" />
+    <bean class="suncodes.service.AfterReturningService" id="afterReturningService" />
+    <bean class="suncodes.service.AfterThrowingService" id="afterThrowingService" />
     <bean class="suncodes.aspectj.LogAspectj" id="logAspectj" />
 
 <!--    这两种方式二选一，等价的，aspectj-autoproxy底层就是用第二种方式实现的-->

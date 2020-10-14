@@ -2,10 +2,7 @@ package suncodes.aspectj;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.SourceLocation;
 import suncodes.pojo.bo.HelloBO;
 import suncodes.service.TargetService;
@@ -59,7 +56,7 @@ public class LogAspectj {
 
 
 
-    @Before("within(suncodes.*)")
+    /*@Before("within(suncodes.*)")
     public void f2() {
         // 匹配suncodes包下的类，不包括子包
         System.out.println("这是前置通知f2");
@@ -129,5 +126,33 @@ public class LogAspectj {
         // 3、有了argNames，则f12中的参数顺序已经不重要了，可以调换
         // 4、argNames(用在注解中)与arg-names(用在XML中),他们是同一个东西.
         System.out.println("这是前置通知f12");
+    }*/
+
+
+//    /**
+//     * 1、后置通知
+//     * 2、returning：目标方法的返回值
+//     * 3、args()：如果不加argNames，则按照参数的顺序，参数名则可以随意写。
+//     * @param a
+//     * @param b
+//     * @param c
+//     */
+//    @AfterReturning(value = "f() && args(b, c)", returning = "a", argNames = "a,c,b")
+//    public void afterReturning1(String a, String c, String b) {
+//        System.out.println("参数值：" + b);
+//        System.out.println("参数值：" + c);
+//        System.out.println("返回值:" + a);
+//        System.out.println("后置通知a1");
+//    }
+
+    /**
+     * 1、异常通知
+     * 通知中的参数可以是其父类，其他类或子类匹配不了
+     * @param e
+     */
+    @AfterThrowing(value = "f()", throwing = "e")
+    public void afterThrowing1(RuntimeException e) {
+//        e.printStackTrace();
+        System.out.println("异常通知：afterThrowing1");
     }
 }
