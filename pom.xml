@@ -17,6 +17,7 @@
         <module>suncodes-spring-aop-write</module>
         <module>suncodes-spring-aop-java</module>
         <module>suncodes-spring-aop-aspectj</module>
+        <module>suncodes-springboot-aop</module>
     </modules>
 
     <properties>

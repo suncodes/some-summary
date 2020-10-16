@@ -1,6 +1,7 @@
 package suncodes.aspectj;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.SourceLocation;
@@ -145,14 +146,27 @@ public class LogAspectj {
 //        System.out.println("后置通知a1");
 //    }
 
-    /**
-     * 1、异常通知
-     * 通知中的参数可以是其父类，其他类或子类匹配不了
-     * @param e
-     */
-    @AfterThrowing(value = "f()", throwing = "e")
-    public void afterThrowing1(RuntimeException e) {
-//        e.printStackTrace();
-        System.out.println("异常通知：afterThrowing1");
+//    /**
+//     * 1、异常通知
+//     * 通知中的参数可以是其父类，其他类或子类匹配不了
+//     * @param e
+//     */
+//    @AfterThrowing(value = "f()", throwing = "e")
+//    public void afterThrowing1(RuntimeException e) {
+////        e.printStackTrace();
+//        System.out.println("异常通知：afterThrowing1");
+//    }
+
+    @Around("f()")
+    public Object around(ProceedingJoinPoint joinPoint) {
+        Object resutObject = null;
+        try {
+            //获取参数列表
+            Object[] args = joinPoint.getArgs();
+            resutObject = joinPoint.proceed(args);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return resutObject;
     }
 }
