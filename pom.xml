@@ -27,7 +27,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- 版本不能太低，不然报错 -->
-        <junit.version>4.13</junit.version>
+<!--        <junit.version>4.13</junit.version>-->
+        <junit.version>4.12</junit.version>
     </properties>
 
     <dependencies>
