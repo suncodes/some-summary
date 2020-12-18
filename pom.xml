@@ -18,6 +18,7 @@
         <module>suncodes-spring-aop-java</module>
         <module>suncodes-spring-aop-aspectj</module>
         <module>suncodes-springboot-aop</module>
+        <module>suncodes-j2ee</module>
     </modules>
 
     <properties>
