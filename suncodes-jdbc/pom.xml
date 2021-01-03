@@ -13,6 +13,7 @@
 
     <properties>
         <mysql.version>8.0.18</mysql.version>
+        <spring.version>5.2.7.RELEASE</spring.version>
     </properties>
 
     <dependencies>
@@ -35,5 +36,18 @@
             <version>1.7</version>
         </dependency>
 
+        <!-- 引入spring bean -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <!-- 引入spring jdbc -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
     </dependencies>
 </project>
