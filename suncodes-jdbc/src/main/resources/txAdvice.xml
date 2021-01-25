@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!-- bean扫描 -->
+    <context:component-scan base-package="suncodes.jdbc.txconfig.service"/>
+    <!-- 数据源 -->
+    <import resource="classpath:jdbctemplate.xml"/>
+    <!-- 数据库操作模板 -->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="druidDataSource"/>
+    </bean>
+
+    <!-- 配置事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="druidDataSource" />
+    </bean>
+
+    <!-- 开启事务注解扫描 ,注意：需要先启用tx命名空间-->
+    <!-- TODO 只会查找和它在相同的应用上下文件中定义的bean上面的@Transactional注解。-->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- 给指定的事务管理器配置指定的规则，用于代替@Transactional注解 -->
+    <!-- 起到两个作用：1：切面；2：给指定的事务管理器配置指定的规则 -->
+    <tx:advice id="interceptor" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="add*" propagation="REQUIRED"/>
+            <tx:method name="save*" propagation="REQUIRED"/>
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!-- 配置切点，给哪些类起作用 -->
+    <aop:config>
+        <aop:pointcut id="pointcut" expression="execution(* suncodes.jdbc.txconfig.service.*.*(..))"/>
+        <aop:advisor advice-ref="interceptor" pointcut-ref="pointcut"/>
+    </aop:config>
+</beans>

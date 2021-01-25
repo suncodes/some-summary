@@ -19,6 +19,8 @@
         <module>suncodes-spring-aop-aspectj</module>
         <module>suncodes-springboot-aop</module>
         <module>suncodes-jdbc</module>
+        <module>suncodes-jdbc-handwrite</module>
+        <module>suncodes-jdbc-springboot</module>
     </modules>
 
     <properties>
