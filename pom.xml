@@ -21,6 +21,7 @@
         <module>suncodes-jdbc</module>
         <module>suncodes-jdbc-handwrite</module>
         <module>suncodes-jdbc-springboot</module>
+        <module>suncodes-review-aop</module>
     </modules>
 
     <properties>
