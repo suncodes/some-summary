@@ -33,6 +33,7 @@ public class ProxyFactoryBeanJdkTest {
         // 放入bean工厂，实际开发是在config下使用注解，设置多个proxyFactoryBean代理，设置不同bean id
         ac.getBeanFactory().registerSingleton("myProxy", proxyFactoryBean);
 
+        // TODO 注意是怎么获取代理对象的
         IUserDao iUserDao = (IUserDao) ac.getBean("myProxy");
         iUserDao.telegram();
         // 获取直接的ProxyFactoryBean对象，加&
