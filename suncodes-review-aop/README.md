@@ -6,6 +6,8 @@
 
 静态代理模块；主要就是有关静态代理怎么实现的。
 
+[ 注意：在文件夹下最好别使用关键字 target，.ignore会忽略上传的 ]
+
 ### suncodes.dyanmic.proxy.jdk
 
 JDK动态代理模块：有关JDK动态代理的实现

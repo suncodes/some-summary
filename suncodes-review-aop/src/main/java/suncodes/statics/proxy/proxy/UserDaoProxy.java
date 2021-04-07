@@ -2,7 +2,7 @@ package suncodes.statics.proxy.proxy;
 
 import lombok.extern.slf4j.Slf4j;
 import suncodes.statics.proxy.interfaces.IUserDao;
-import suncodes.statics.proxy.target.UserDao;
+import suncodes.statics.proxy.targets.UserDao;
 
 /**
  * 3、代理类
