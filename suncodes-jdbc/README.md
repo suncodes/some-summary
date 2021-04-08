@@ -150,3 +150,144 @@ insert  into `user_role`(`UID`,`RID`) values (41,1),(45,1),(41,2);
 
 ```
 
+#### 创建实体类
+```java
+package suncodes.mybatis.xml.domain;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Date;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class User {
+    private Integer id;
+    private String username;
+    private Date birthday;
+    private String sex;
+    private String address;
+}
+```
+
+#### 持久层接口
+```java
+package suncodes.mybatis.xml.dao;
+
+import suncodes.mybatis.xml.domain.User;
+
+import java.util.List;
+
+public interface IUserDao {
+    /**
+     * 查询所有操作
+     * @return 用户列表
+     */
+    List<User> findAll();
+}
+```
+
+#### 持久层接口对应配置文件
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="suncodes.mybatis.xml.dao.IUserDao">
+    <!--配置查询所有-->
+    <select id="findAll" resultType="suncodes.mybatis.xml.domain.User">
+        select * from user
+    </select>
+</mapper>
+```
+
+目录：resources/suncodes/mybatis/xml/dao/IUserDao.xml
+
+#### SqlMapConfig.xml配置文件
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- 配置环境，默认激活的是id为mysql的配置 -->
+    <environments default="mysql">
+        <!-- 配置mysql环境 -->
+        <environment id="mysql">
+            <transactionManager type="JDBC" />
+            <!-- 配置数据源（连接池） -->
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <!-- 需要设置时区 -->
+                <property name="url" value="jdbc:mysql://localhost:3306/mybatis?serverTimezone=UTC"/>
+                <property name="username" value="root"/>
+                <property name="password" value="root"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!-- 指定映射配置文件的位置，映射配置文件指的是每个dao独立的配置文件 -->
+    <mappers>
+        <mapper resource="suncodes/mybatis/xml/dao/IUserDao.xml" />
+    </mappers>
+</configuration>
+```
+
+#### 测试类
+```java
+@Test
+public void xml() throws IOException {
+    // 1、读取配置文件
+    InputStream resourceAsStream = Resources.getResourceAsStream("mybatis/SqlMapConfig.xml");
+    // 2、创建 SqlSessionFactory 工厂
+    SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(resourceAsStream);
+    // 3、创建 SqlSession 对象
+    SqlSession sqlSession = sqlSessionFactory.openSession();
+    // 4、创建代理对象
+    IUserDao userDao = sqlSession.getMapper(IUserDao.class);
+    // 5、执行方法
+    List<User> userList = userDao.findAll();
+    for (User user : userList) {
+        System.out.println(user);
+    }
+    // 6、释放资源
+    sqlSession.close();
+    resourceAsStream.close();
+}
+```
+
+#### 小结
+    mybatis的环境搭建
+        第一步：创建maven工程并导入坐标
+        第二步：创建实体类和dao的接口
+        第三步：创建Mybatis的主配置文件
+                SqlMapConifg.xml
+        第四步：创建映射配置文件
+                IUserDao.xml
+    环境搭建的注意事项：
+        第一个：创建IUserDao.xml 和 IUserDao.java时名称是为了和我们之前的知识保持一致。
+            在Mybatis中它把持久层的操作接口名称和映射文件也叫做：Mapper
+            所以：IUserDao 和 IUserMapper是一样的
+        第二个：在idea中创建目录的时候，它和包是不一样的
+            包在创建时：com.itheima.dao它是三级结构
+            目录在创建时：com.itheima.dao是一级目录
+        第三个：mybatis的映射配置文件位置必须和dao接口的包结构相同
+        第四个：映射配置文件的mapper标签namespace属性的取值必须是dao接口的全限定类名
+        第五个：映射配置文件的操作配置（select），id属性的取值必须是dao接口的方法名
+    
+        当我们遵从了第三，四，五点之后，我们在开发中就无须再写dao的实现类。
+    mybatis的入门案例
+        第一步：读取配置文件
+        第二步：创建SqlSessionFactory工厂
+        第三步：创建SqlSession
+        第四步：创建Dao接口的代理对象
+        第五步：执行dao中的方法
+        第六步：释放资源
+    
+        注意事项：
+            不要忘记在映射配置中告知mybatis要封装到哪个实体类中
+            配置的方式：指定实体类的全限定类名
+
