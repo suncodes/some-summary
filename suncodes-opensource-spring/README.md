@@ -196,10 +196,119 @@ InitDestroyMethod...destroy1...
 
 可以发现对所有的 Bean 都进行了回调。
 
+### 属性赋值
 
+有三种方式：
+- @Value
+- @PropertySource
+- StringValueResolver（略）
 
+基本都是配合使用的
 
+1. 创建实体类
 
+```java
+package suncodes.opensource.propertyvalue;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
+
+@Component
+@PropertySource("classpath:propertyValue.properties")
+public class Person {
+
+    /**
+     * 使用@Value赋值；
+     * 1、基本数值
+     * 2、可以写SpEL； #{}
+     * 3、可以写${}；取出配置文件【properties】中的值（在运行环境变量里面的值）
+     */
+    @Value("张三")
+    private String name;
+    @Value("#{20-2}")
+    private Integer age;
+
+    @Value("${person.nickName}")
+    private String nickName;
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public Person(String name, Integer age) {
+        super();
+        this.name = name;
+        this.age = age;
+    }
+
+    public Person() {
+        super();
+    }
+
+    @Override
+    public String toString() {
+        return "Person [name=" + name + ", age=" + age + ", nickName=" + nickName + "]";
+    }
+}
+
+```
+
+2. 创建配置文件
+
+```properties
+# propertyValue.properties
+person.nickName="hehe"
+person.other="aaaaaaaaaaa"
+```
+3. 扫描类
+
+```java
+package suncodes.opensource.propertyvalue;
+
+import org.springframework.context.annotation.ComponentScan;
+
+@ComponentScan(basePackageClasses = {Person.class})
+public class PropertyValueConfig {
+}
+
+```
+4. 测试类
+```java
+package suncodes.opensource.propertyvalue;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class Test {
+    public static void main(String[] args) {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(PropertyValueConfig.class);
+        Person person = context.getBean("person", Person.class);
+        System.out.println(person);
+        context.close();
+    }
+}
+
+```
 
 
 
