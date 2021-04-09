@@ -310,6 +310,192 @@ public class Test {
 
 ```
 
+### 自动装配
+
+spring的自动装配功能的定义：无须在Spring配置文件中描述javaBean之间的依赖关系（如配置<property>、<constructor-arg>）。IOC容器会自动建立javabean之间的关联关系。
+
+#### Spring的自动装配Bean的三种方式
+
+在Spring中，支持 5 自动装配模式。
+
+- no – 缺省情况下，自动配置是通过“ref”属性手动设定
+- byName – 根据属性名称自动装配。如果一个bean的名称和其他bean属性的名称是一样的，将会自装配它。
+- byType – 按数据类型自动装配。如果一个bean的数据类型是用其它bean属性的数据类型，兼容并自动装配它。
+- constructor – 在构造函数参数的byType方式。
+- autodetect – 如果找到默认的构造函数，使用“自动装配用构造”; 否则，使用“按类型自动装配”。【在Spring3.0以后的版本被废弃，已经不再合法了】
+
+1.手动装配
+
+（1）创建一个单纯的实体类
+
+```java
+package suncodes.opensource.autowire.xml;
+
+public class Address {
+
+    private String fulladdress;
+
+    public Address() {
+
+    }
+
+    public Address(String addr) {
+        this.fulladdress = addr;
+    }
+
+    public String getFulladdress() {
+        return fulladdress;
+    }
+
+    public void setFulladdress(String fulladdress) {
+        this.fulladdress = fulladdress;
+    }
+
+    @Override
+    public String toString() {
+        return "Address{" +
+                "fulladdress='" + fulladdress + '\'' +
+                '}';
+    }
+}
+```
+
+
+（2）创建一个引用其他类的实体类
+
+```java
+package suncodes.opensource.autowire.xml;
+
+public class Customer {
+
+    private Address address;
+
+    public Customer() {
+
+    }
+
+    public Customer(int id, Address address) {
+        super();
+        this.address = address;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "address=" + address +
+                '}';
+    }
+}
+```
+
+（3）创建配置文件
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="address" class="suncodes.opensource.autowire.xml.Address">
+        <property name="fulladdress" value="河南省"/>
+    </bean>
+    <bean id="customer" class="suncodes.opensource.autowire.xml.Customer">
+        <property name="address" ref="address"/>
+    </bean>
+</beans>
+```
+
+（4）测试
+
+```java
+public class AutowireTest {
+    @Test
+    public void autowireXmlNo() {
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("autowire/AutowireXmlNo.xml");
+        Customer customer = context.getBean("customer", Customer.class);
+        System.out.println(customer);
+    }
+}
+```
+
+2.第一种自动装配【根据属性名称自动装配】
+
+（1）创建一个单纯的实体类
+
+（2）创建一个引用其他类的实体类
+
+（3）创建配置文件
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="address" class="suncodes.opensource.autowire.xml.Address">
+        <property name="fulladdress" value="ByName"/>
+    </bean>
+    <bean id="customer" class="suncodes.opensource.autowire.xml.Customer" autowire="byName">
+    </bean>
+</beans>
+```
+
+这样就将address注入到Customer中。这就是自动注入ByName.在Customer bean中公开了一个属性address，Spring容器会找到address bean,并且装配。这里必须要注意，Customer中要被注入的bean的set方法要求必须是public的，否则会报空指针异常。还有配置的bean的id必须和Customer中声明的变量名相同。
+
+3.第二种自动装配【根据数据类型自动装配】
+
+配置文件
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="address" class="suncodes.opensource.autowire.xml.Address">
+        <property name="fulladdress" value="ByType"/>
+    </bean>
+    <bean id="customer" class="suncodes.opensource.autowire.xml.Customer" autowire="byType">
+    </bean>
+</beans>
+```
+类型自动装配的意思是如果一个bean的数据类型与其他的bean属性的数据类型相同，将会自动兼容装配它。当然要求只能配置一个某一个类型的bean。
+
+4.第三种自动装配【根据构造方法自动装配】
+
+配置文件：
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="address" class="suncodes.opensource.autowire.xml.Address">
+        <property name="fulladdress" value="constructor"/>
+    </bean>
+    <bean id="customer" class="suncodes.opensource.autowire.xml.Customer" autowire="constructor">
+    </bean>
+</beans>
+```
+需要有对应的构造函数，才可以。
+
+#### @Autowired 、@Qualifier 和 @Primary
+
+
+#### @Resource
+
+
+#### @Inject
+
+
+#### 自动装配原理
 
 
 
