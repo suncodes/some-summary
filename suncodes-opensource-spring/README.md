@@ -488,6 +488,9 @@ public class AutowireTest {
 
 #### @Autowired 、@Qualifier 和 @Primary
 
+首先都需要声明成一个 Bean 才可以
+
+
 
 #### @Resource
 
