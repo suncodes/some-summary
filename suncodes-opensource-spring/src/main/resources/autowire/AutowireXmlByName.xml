@@ -6,6 +6,7 @@
     <bean id="address" class="suncodes.opensource.autowire.xml.Address">
         <property name="fulladdress" value="ByName"/>
     </bean>
+    <!-- 没有 setter 方法不报错，但是无法注入对象 -->
     <bean id="customer" class="suncodes.opensource.autowire.xml.Customer" autowire="byName">
     </bean>
 </beans>

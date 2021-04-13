@@ -1,10 +1,10 @@
-package suncodes.opensource.autowire.annotation;
+package suncodes.opensource.autowire.annotation.autowired;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Customer {
+public class CustomerDefault {
 
     @Autowired
     private Address address;

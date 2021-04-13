@@ -490,15 +490,578 @@ public class AutowireTest {
 
 首先都需要声明成一个 Bean 才可以
 
+@Autowired 注释，它可以对类成员变量、方法及构造函数进行标注，完成自动装配的工作。 通过 @Autowired的使用来消除 set ，get方法。
+
+　　在使用@Autowired时，首先在容器中查询对应类型的bean
+
+　　　　如果查询结果刚好为一个，就将该bean装配给@Autowired指定的数据
+
+　　　　如果查询的结果不止一个，那么@Autowired会根据名称来查找。
+
+　　　　如果查询的结果为空，那么会抛出异常。解决方法时，使用required=false
+
+（1）按类型注入（默认）
+
+    @Autowired
+    private Address address;
+
+（2）按名称注入（相同名称或@Qualifier）
+
+使用Qualifier注解，选择一个对象的名称
+
+    @Qualifier("addressByName")
+    @Autowired
+    private Address address;
+
+（3）默认优先注入（@Primary）
+
+Primary可以理解为默认优先选择,不可以同时设置多个,内部实质是设置BeanDefinition的primary属性
+
+    @Bean
+    Address address() {
+        Address address = new Address();
+        address.setFulladdress("另外一个address");
+        return address;
+    }
+
+    @Bean
+    Address addressByName() {
+        Address address = new Address();
+        address.setFulladdress("addressByName");
+        return address;
+    }
+
+    @Primary
+    @Bean
+    Address addressByPrimary() {
+        Address address = new Address();
+        address.setFulladdress("addressByPrimary");
+        return address;
+    }
+
+    @Component
+    public class CustomerByPrimary {
+    
+        @Autowired
+        private Address address;
+    
+        @Override
+        public String toString() {
+            return "Customer{" +
+                    "address=" + address +
+                    '}';
+        }
+    }
+
+
+（4）@Primary和@Qualifier区别
+
+- @Primary 在同一类型上只能设置一个
+- 如果 @Qualifier 和 @Primary 注释都存在，那么 @Qualifier 注释将具有优先权。
+- @Primary 注解是加在需要被引用的类上
+- @Qualifier 是加在需要引用别人对象的属性或类或方法上
+
+比如：Customer 依赖 Address，需要注入 Address
+
+则 @Primary 需要加在多个 Address 上
+
+@Qualifier 一般和 @Autowired 共用，加在同一个地方
 
 
 #### @Resource
 
+@Resource和@Autowired注解都是用来实现依赖注入的。只是@AutoWried按by type自动注入，而@Resource默认按byName自动注入。
+
+@Resource有两个重要属性，分别是name和type
+
+spring将name属性解析为bean的名字，而type属性则被解析为bean的类型。所以如果使用name属性，则使用byName的自动注入策略，如果使用type属性则使用byType的自动注入策略。如果都没有指定，则通过反射机制使用byName自动注入策略。
+
+@Resource依赖注入时查找bean的规则：(以用在field上为例)
+
+既不指定name属性，也不指定type属性，则自动按byName方式进行查找。如果没有找到符合的bean，则回退为一个原始类型进行查找，如果找到就注入。
+
+（1）按类型注入（默认name）
+
+    @Resource
+    private Address address;
+
+（2）按名称注入
+
+@Qualifier 没效果
+
+    @Resource(name = "addressByName")
+    private Address address;
+
+（3）按类型注入
+
+    @Resource(type = Address.class)
+    private Address address;
+
+如果类型有多个，还是会按照名称注入
+
+（4）默认优先注入（@Primary）
+
+不起作用
+
 
 #### @Inject
 
+略
+
+自动装配;
+		Spring利用依赖注入（DI），完成对IOC容器中中各个组件的依赖关系赋值；
+
+1）、@Autowired：自动注入：
+
+		1）、默认优先按照类型去容器中找对应的组件:applicationContext.getBean(BookDao.class);找到就赋值
+		2）、如果找到多个相同类型的组件，再将属性的名称作为组件的id去容器中查找
+							applicationContext.getBean("bookDao")
+		3）、@Qualifier("bookDao")：使用@Qualifier指定需要装配的组件的id，而不是使用属性名
+		4）、自动装配默认一定要将属性赋值好，没有就会报错；
+			可以使用@Autowired(required=false);
+		5）、@Primary：让Spring进行自动装配的时候，默认使用首选的bean；
+				也可以继续使用@Qualifier指定需要装配的bean的名字
+		BookService{
+			@Autowired
+			BookDao  bookDao;
+		}
+
+2）、Spring还支持使用@Resource(JSR250)和@Inject(JSR330)[java规范的注解]
+
+		@Resource:
+			可以和@Autowired一样实现自动装配功能；默认是按照组件名称进行装配的；
+			没有能支持@Primary功能没有支持@Autowired（reqiured=false）;
+		@Inject:
+			需要导入javax.inject的包，和Autowired的功能一样。没有required=false的功能；
+ 
+        @Autowired:Spring定义的； @Resource、@Inject都是java规范
+
+
 
 #### 自动装配原理
+
+赋值：
+
+org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean
+
+AutowiredAnnotationBeanPostProcessor 解析完成自动装配功能；
+
+### Aware
+
+Aware 接口，提供了类似回调函数的功能
+
+自定义组件想要使用Spring 容器底层的一些组件（Application Context，Bean Factory）;自定义组件需要实现xxxAware接口；在创建对象的时候，会调用接口规定的方法注入相关组件
+
+```java
+package org.springframework.beans.factory;
+public interface Aware {
+}
+```
+
+#### 入门
+
+1 ApplicationContextAware 自动注入IOC容器
+
+```java
+package org.springframework.context;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.Aware;
+
+public interface ApplicationContextAware extends Aware {
+
+    void setApplicationContext(ApplicationContext applicationContext) throws BeansException;
+
+}
+```
+
+2 ApplicationEventPublisherAware 注入事件派发器
+
+package org.springframework.context;
+
+```java
+import org.springframework.beans.factory.Aware;
+
+public interface ApplicationEventPublisherAware extends Aware {
+
+    void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher);
+
+}
+```
+
+3 BeanClassLoaderAware 类加载器
+
+```java
+package org.springframework.beans.factory;
+
+public interface BeanClassLoaderAware extends Aware {
+
+    void setBeanClassLoader(ClassLoader classLoader);
+
+}
+```
+
+4 BeanFactoryAware Bean工厂
+
+```java
+package org.springframework.beans.factory;
+
+import org.springframework.beans.BeansException;
+public interface BeanFactoryAware extends Aware {
+
+    void setBeanFactory(BeanFactory beanFactory) throws BeansException;
+
+}
+```
+
+5 BeanNameAware Bean名字
+
+```java
+package org.springframework.beans.factory;
+
+public interface BeanNameAware extends Aware {
+
+    void setBeanName(String name);
+
+}
+```
+
+6 EmbeddedValueResolverAware Embedded值解析器
+
+```java
+package org.springframework.context;
+
+import org.springframework.beans.factory.Aware;
+import org.springframework.util.StringValueResolver;
+
+public interface EmbeddedValueResolverAware extends Aware {
+
+    void setEmbeddedValueResolver(StringValueResolver resolver);
+
+}
+```
+
+7 EnvironmentAware 环境
+
+```java
+package org.springframework.context;
+
+import org.springframework.beans.factory.Aware;
+import org.springframework.core.env.Environment;
+
+public interface EnvironmentAware extends Aware {
+
+    void setEnvironment(Environment environment);
+
+}
+```
+
+8 ImportAware 导入相关的
+
+```java
+package org.springframework.context.annotation;
+
+import org.springframework.beans.factory.Aware;
+import org.springframework.core.type.AnnotationMetadata;
+
+public interface ImportAware extends Aware {
+
+    void setImportMetadata(AnnotationMetadata importMetadata);
+
+}
+```
+
+9 LoadTimeWeaverAware 导入相关的
+
+```java
+package org.springframework.context.weaving;
+
+import org.springframework.beans.factory.Aware;
+import org.springframework.instrument.classloading.LoadTimeWeaver;
+
+public interface LoadTimeWeaverAware extends Aware {
+
+    void setLoadTimeWeaver(LoadTimeWeaver loadTimeWeaver);
+
+}
+```
+
+10 MessageSourceAware 国际化
+
+```java
+package org.springframework.context;
+
+import org.springframework.beans.factory.Aware;
+
+public interface MessageSourceAware extends Aware {
+
+    void setMessageSource(MessageSource messageSource);
+
+}
+```
+
+11 NotificationPublisherAware 发送通知的支持
+
+```java
+package org.springframework.jmx.export.notification;
+
+import org.springframework.beans.factory.Aware;
+
+public interface NotificationPublisherAware extends Aware {
+
+    void setNotificationPublisher(NotificationPublisher notificationPublisher);
+
+}
+```
+
+12 ResourceLoaderAware 资源加载器
+
+```java
+package org.springframework.context;
+
+import org.springframework.beans.factory.Aware;
+import org.springframework.core.io.ResourceLoader;
+
+public interface ResourceLoaderAware extends Aware {
+
+    void setResourceLoader(ResourceLoader resourceLoader);
+
+}
+```
+
+13 测试用例
+
+```java
+@Component
+public class MyAware implements ApplicationContextAware, BeanNameAware, EmbeddedValueResolverAware {
+
+    private ApplicationContext applicationContext;
+
+    @Override
+    public void setBeanName(String name) {
+        System.out.println("MyAware setBeanName:" + name);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        System.out.println("传入的IOC " + applicationContext);
+        this.applicationContext = applicationContext;
+    }
+
+    @Override
+    public void setEmbeddedValueResolver(StringValueResolver resolver) {
+        String value = resolver.resolveStringValue("你好${os.name} 我是#{20*20}");
+        System.out.println("解析的字符串：" + value);
+    }
+}
+
+```
+
+    MyAware setBeanName:myAware
+    解析的字符串：你好Windows 10 我是400
+    传入的IOC org.springframework.context.annotation.AnnotationConfigApplicationContext@4fccd51b, started on Tue Apr 13 16:47:02 CST 2021
+
+#### 原理
+
+### Profile
+
+就是通过激活 spring.profiles.active 变量进行生效的
+
+#### 入门
+
+（1）创建实体类，模拟不同环境的不同配置
+
+```java
+public class MyProfile {
+    private String env;
+
+    public String getEnv() {
+        return env;
+    }
+
+    public void setEnv(String env) {
+        this.env = env;
+    }
+
+    @Override
+    public String toString() {
+        return "MyProfile{" +
+                "env='" + env + '\'' +
+                '}';
+    }
+}
+
+```
+
+（2）配置profile
+
+```java
+@ComponentScan(basePackages = "suncodes.opensource.profile")
+@Configuration
+public class MyProfileConfig {
+
+    @Profile("dev")
+    @Bean
+    MyProfile myProfileDev() {
+        MyProfile myProfile = new MyProfile();
+        myProfile.setEnv("这是开发环境");
+        return myProfile;
+    }
+
+    @Profile("test")
+    @Bean
+    MyProfile myProfileTest() {
+        MyProfile myProfile = new MyProfile();
+        myProfile.setEnv("这是测试环境");
+        return myProfile;
+    }
+}
+
+```
+
+（3）测试（不配置spring.profiles.active）
+
+```java
+   @Test
+    public void f() {
+        AnnotationConfigApplicationContext context  =
+                new AnnotationConfigApplicationContext(MyProfileConfig.class);
+        String[] beanDefinitionNames = context.getBeanDefinitionNames();
+        for (String beanDefinitionName : beanDefinitionNames) {
+            System.out.println(beanDefinitionName);
+        }
+        context.close();
+    }
+```
+
+（4）测试（激活profile）
+
+```java
+    @Test
+    public void f1() {
+        AnnotationConfigApplicationContext context =
+                new AnnotationConfigApplicationContext();
+        //1、创建一个applicationContext
+        //2、设置需要激活的环境
+        context.getEnvironment().setActiveProfiles("dev");
+        //3、注册主配置类
+        context.register(MyProfileConfig.class);
+        //4、启动刷新容器
+        context.refresh();
+        String[] beanDefinitionNames = context.getBeanDefinitionNames();
+        for (String beanDefinitionName : beanDefinitionNames) {
+            System.out.println(beanDefinitionName);
+        }
+        context.close();
+    }
+```
+
+#### Profile激活方式
+
+（1）在配置文件中直接指定
+
+    spring.profiles.active=test
+
+（2）使用占位符，在打包时替换（maven）
+
+    首先在配置文件中增加：
+        spring.profiles.active=@package.target@
+    在pom.xml中增加不同环境打包的配置：
+       <profiles>
+         <profile>
+           <id>dev</id><!-- 开发环境 -->
+         </profile>
+         <profile>
+           <id>prod</id><!-- 生产环境 -->
+           <properties>
+             <package.target>prod</package.target>
+           </properties>
+         </profile>
+         <profile>
+           <id>test</id><!-- 测试环境 -->
+           <properties>
+             <package.target>test</package.target>
+           </properties>
+         </profile>
+       </profiles>
+    
+    执行打包命令：
+    mvn package -Ptest  
+
+（3）JVM参数方式
+
+    java命令行：
+      java -jar app.jar --spring.profiles.active=dev
+    tomcat 中 catalina.bat（.sh中不用“set”） 添加JAVA_OPS。通过设置active选择不同配置文件：
+      set JAVA_OPTS="-Dspring.profiles.active=test"
+    eclipse 中启动tomcat。项目右键 run as –> run configuration–>Arguments–> VM arguments中添加。
+      -Dspring.profiles.active="dev"
+
+
+（4）web.xml方式
+
+```xml
+ <init-param>
+   <param-name>spring.profiles.active</param-name>
+   <param-value>production</param-value>
+ </init-param>
+```
+
+（5）标注方式（junit单元测试非常实用）
+
+    @ActiveProfiles({"unittest","productprofile"})
+
+（6）Java API 方式
+
+        // 1、创建一个applicationContext
+        AnnotationConfigApplicationContext context =
+                new AnnotationConfigApplicationContext();
+        // 2、设置需要激活的环境
+        context.getEnvironment().setActiveProfiles("dev");
+        // 3、注册主配置类
+        context.register(MyProfileConfig.class);
+        // 4、启动刷新容器
+        context.refresh();
+
+（7）添加到环境变量
+
+```java
+@WebListener
+public class InitConfigListener implements ServletContextListener {
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+        String environment = "";
+        //加载Properties属性文件获取environment值 
+        //侦测jvm环境，并缓存到全局变量中
+        String env = System.setProperty("spring.profiles.active",environment);
+    }
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
+    }
+}
+```
+
+    在Unix/Linux环境中，可以通过环境变量注入profile的值：
+
+    export spring_profiles_active=dev
+    java -jar application.jar 
+
+
+#### 和maven的profile的区别
+
+https://blog.51cto.com/u_14254788/2419516
+
+具体见 之前的 笔记 maven 一些标签总结
+
+### AOP
+
+
+
+
+
+
+
+
 
 
 

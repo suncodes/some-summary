@@ -1,4 +1,4 @@
-package suncodes.opensource.autowire.annotation;
+package suncodes.opensource.autowire.annotation.resource;
 
 import org.springframework.stereotype.Component;
 
