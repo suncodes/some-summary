@@ -12,13 +12,13 @@ import suncodes.aop.pointcut.Pointcut;
  */
 public class AspectJPointcutAdvisor implements PointcutAdvisor {
 
-	//用户配置的advice的bean的名字
+	/** 用户配置的advice的bean的名字 */
 	private String adviceBeanName;
 
-	//切入点表达式
+	/** 切入点表达式 */
 	private String expression;
 
-	//AspectJ表达式切入点对象
+	/** AspectJ表达式切入点对象 */
 	private AspectJExpressionPointcut pointcut;
 
 	public AspectJPointcutAdvisor(String adviceBeanName, String expression) {

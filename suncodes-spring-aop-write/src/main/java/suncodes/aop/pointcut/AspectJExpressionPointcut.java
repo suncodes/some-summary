@@ -15,14 +15,14 @@ import org.aspectj.weaver.tools.ShadowMatch;
  */
 public class AspectJExpressionPointcut implements Pointcut {
 
-	//获得切点解析器
+	/** 获得切点解析器 */
 	private static PointcutParser pp = PointcutParser
 			.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
 
-	//表达式
+	/** 表达式 */
 	private String expression;
 
-	//Pointcut表达式对象
+	/** Pointcut表达式对象 */
 	private PointcutExpression pe;
 
 	public AspectJExpressionPointcut(String expression) {
@@ -32,13 +32,13 @@ public class AspectJExpressionPointcut implements Pointcut {
 		pe = pp.parsePointcutExpression(expression);
 	}
 
-	//匹配类  用PointcutExpression匹配类，匹配有时候不准，后面可以通过匹配方法来精确匹配
+	/** 匹配类  用PointcutExpression匹配类，匹配有时候不准，后面可以通过匹配方法来精确匹配 */
 	@Override
 	public boolean matchsClass(Class<?> targetClass) {
 		return pe.couldMatchJoinPointsInType(targetClass);
 	}
 
-	//匹配方法  用PointcutExpression匹配方法，可以实现精确匹配
+	/** 匹配方法  用PointcutExpression匹配方法，可以实现精确匹配 */
 	@Override
 	public boolean matchsMethod(Method method, Class<?> targetClass) {
 		ShadowMatch sm = pe.matchesMethodExecution(method);

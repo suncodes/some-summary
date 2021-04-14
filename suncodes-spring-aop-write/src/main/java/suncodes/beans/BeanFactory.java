@@ -18,7 +18,9 @@ public interface BeanFactory {
 	 */
 	Object getBean(String name) throws Throwable;
 
-	//注册AOP织入(注册AOP增强处理的观察者实现)
+	/**
+	 * 注册AOP织入(注册AOP增强处理的观察者实现)
+	 */
 	void registerBeanPostProcessor(BeanPostProcessor bpp);
 	
 }

@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 
 /**
  * TODO 注册成一个bean
+ * 通过 BeanNameAutoProxyCreator 可以生效
  */
 @Component
 @Slf4j

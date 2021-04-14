@@ -36,7 +36,7 @@ public class GenericBeanDefinition implements BeanDefinition {
 
 	private List<PropertyValue> propertyValues;
 
-	//没有无参构造函数时,传递构造参数的类型和值到cglib动态代理里面去获取有参构造函数进行增强
+	// 没有无参构造函数时,传递构造参数的类型和值到cglib动态代理里面去获取有参构造函数进行增强
 	private ThreadLocal<Object[]> realConstructorArgumentValues = new ThreadLocal<>();
 
 	@Override
@@ -115,6 +115,7 @@ public class GenericBeanDefinition implements BeanDefinition {
 		return this.destroyMethodName;
 	}
 
+	@Override
 	public List<?> getConstructorArgumentValues() {
 		return constructorArgumentValues;
 	}
@@ -123,6 +124,7 @@ public class GenericBeanDefinition implements BeanDefinition {
 		this.constructorArgumentValues = constructorArgumentValues;
 	}
 
+	@Override
 	public List<PropertyValue> getPropertyValues() {
 		return propertyValues;
 	}
@@ -131,18 +133,22 @@ public class GenericBeanDefinition implements BeanDefinition {
 		this.propertyValues = propertyValues;
 	}
 
+	@Override
 	public Constructor<?> getConstructor() {
 		return constructor;
 	}
 
+	@Override
 	public void setConstructor(Constructor<?> constructor) {
 		this.constructor = constructor;
 	}
 
+	@Override
 	public Method getFactoryMethod() {
 		return factoryMethod;
 	}
 
+	@Override
 	public void setFactoryMethod(Method factoryMethod) {
 		this.factoryMethod = factoryMethod;
 	}
@@ -169,12 +175,15 @@ public class GenericBeanDefinition implements BeanDefinition {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		GenericBeanDefinition other = (GenericBeanDefinition) obj;
 		if (beanClass == null) {
 			if (other.beanClass != null)
@@ -182,31 +191,38 @@ public class GenericBeanDefinition implements BeanDefinition {
 		} else if (!beanClass.equals(other.beanClass))
 			return false;
 		if (destroyMethodName == null) {
-			if (other.destroyMethodName != null)
+			if (other.destroyMethodName != null) {
 				return false;
-		} else if (!destroyMethodName.equals(other.destroyMethodName))
+			}
+		} else if (!destroyMethodName.equals(other.destroyMethodName)) {
 			return false;
+		}
 		if (factoryBeanName == null) {
-			if (other.factoryBeanName != null)
+			if (other.factoryBeanName != null) {
 				return false;
-		} else if (!factoryBeanName.equals(other.factoryBeanName))
+			}
+		} else if (!factoryBeanName.equals(other.factoryBeanName)) {
 			return false;
+		}
 		if (factoryMethodName == null) {
-			if (other.factoryMethodName != null)
+			if (other.factoryMethodName != null) {
 				return false;
-		} else if (!factoryMethodName.equals(other.factoryMethodName))
+			}
+		} else if (!factoryMethodName.equals(other.factoryMethodName)) {
 			return false;
+		}
 		if (initMethodName == null) {
-			if (other.initMethodName != null)
+			if (other.initMethodName != null) {
 				return false;
-		} else if (!initMethodName.equals(other.initMethodName))
+			}
+		} else if (!initMethodName.equals(other.initMethodName)) {
 			return false;
+		}
 		if (scope == null) {
-			if (other.scope != null)
-				return false;
-		} else if (!scope.equals(other.scope))
-			return false;
-		return true;
+			return other.scope == null;
+		} else {
+			return scope.equals(other.scope);
+		}
 	}
 
 }

@@ -141,7 +141,9 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry, 
 		return instance;
 	}
 
-	// 应用bean初始化前的处理
+	/**
+	 * 应用bean初始化前的处理
+	 */
 	private Object applyPostProcessBeforeInitialization(Object bean, String beanName) throws Throwable {
 		for (BeanPostProcessor bpp : this.beanPostProcessors) {
 			bean = bpp.postProcessBeforeInitialization(bean, beanName);
@@ -149,7 +151,9 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry, 
 		return bean;
 	}
 
-	// 应用bean初始化后的处理
+	/**
+	 * 应用bean初始化后的处理
+	 */
 	private Object applyPostProcessAfterInitialization(Object bean, String beanName) throws Throwable {
 		for (BeanPostProcessor bpp : this.beanPostProcessors) {
 			bean = bpp.postProcessAfterInitialization(bean, beanName);

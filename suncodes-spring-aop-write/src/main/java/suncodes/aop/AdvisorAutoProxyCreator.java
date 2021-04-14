@@ -27,22 +27,28 @@ import suncodes.beans.BeanPostProcessor;
  *
  */
 public class AdvisorAutoProxyCreator implements AdvisorRegistry, BeanPostProcessor, BeanFactoryAware {
-	//通知者
+	// 通知者
 	private List<Advisor> advisors;
 
-	//bean工厂
+	// bean工厂
 	private BeanFactory beanFactory;
 
 	public AdvisorAutoProxyCreator() {
 		this.advisors = new ArrayList<>();
 	}
 
-	//注册通知者
+	/**
+	 * 注册通知者
+	 */
+	@Override
 	public void registAdvisor(Advisor ad) {
 		this.advisors.add(ad);
 	}
 
-	//获取通知者
+	/**
+	 * 获取通知者
+	 */
+	@Override
 	public List<Advisor> getAdvisors() {
 		return advisors;
 	}
@@ -52,7 +58,10 @@ public class AdvisorAutoProxyCreator implements AdvisorRegistry, BeanPostProcess
 		this.beanFactory = bf;
 	}
 
-	//后置增强
+	/**
+     *  后置增强
+     */
+	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws Throwable {
 
 		// 在此判断bean是否需要进行切面增强
@@ -64,7 +73,7 @@ public class AdvisorAutoProxyCreator implements AdvisorRegistry, BeanPostProcess
 		return bean;
 	}
 
-	//在此判断bean是否需要进行切面增强
+	/** 在此判断bean是否需要进行切面增强 */
 	private List<Advisor> getMatchedAdvisors(Object bean, String beanName) {
 		if (CollectionUtils.isEmpty(advisors)) {
 			return null;
@@ -88,7 +97,7 @@ public class AdvisorAutoProxyCreator implements AdvisorRegistry, BeanPostProcess
 		return matchAdvisors;
 	}
 
-	//获取类的所有方法,包括继承的父类和实现的接口里面的方法
+	/** 获取类的所有方法,包括继承的父类和实现的接口里面的方法 */
 	private List<Method> getAllMethodForClass(Class<?> beanClass) {
 		List<Method> allMethods = new LinkedList<>();
 		//获取beanClass的所有接口
@@ -106,7 +115,7 @@ public class AdvisorAutoProxyCreator implements AdvisorRegistry, BeanPostProcess
 		return allMethods;
 	}
 
-	//判断类及类的方法是否和切面匹配
+	/** 判断类及类的方法是否和切面匹配 */
 	private boolean isPointcutMatchBean(PointcutAdvisor pa, Class<?> beanClass, List<Method> methods) {
 		Pointcut p = pa.getPointcut();
 
@@ -124,7 +133,7 @@ public class AdvisorAutoProxyCreator implements AdvisorRegistry, BeanPostProcess
 		return false;
 	}
 
-	//创建代理对象增强
+	/** 创建代理对象增强 */
 	private Object createProxy(Object bean, String beanName, List<Advisor> matchAdvisors) throws Throwable {
 		// 通过AopProxyFactory工厂去完成选择、和创建代理对象的工作。
 		return AopProxyFactory.getDefaultAopProxyFactory().createAopProxy(bean, beanName, matchAdvisors, beanFactory)

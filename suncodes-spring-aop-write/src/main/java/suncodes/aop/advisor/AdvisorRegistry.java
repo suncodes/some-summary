@@ -11,9 +11,9 @@ import java.util.List;
  */
 public interface AdvisorRegistry {
 
-	//注册Advisor
+	/** 注册Advisor */
 	public void registAdvisor(Advisor ad);
 
-	//获取Advisor
+	/** 获取Advisor */
 	public List<Advisor> getAdvisors();
 }

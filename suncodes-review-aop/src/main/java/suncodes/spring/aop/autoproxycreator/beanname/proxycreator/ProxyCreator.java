@@ -15,6 +15,7 @@ public class ProxyCreator {
     public BeanNameAutoProxyCreator beanNameAutoProxyCreator() {
         BeanNameAutoProxyCreator beanNameAutoProxyCreator = new BeanNameAutoProxyCreator();
         beanNameAutoProxyCreator.setBeanNames("userDao");
+        // 通过手动设置，logAdvice 可以进行织入
         beanNameAutoProxyCreator.setInterceptorNames("logAdvice", "logAdvisor");
         return beanNameAutoProxyCreator;
     }

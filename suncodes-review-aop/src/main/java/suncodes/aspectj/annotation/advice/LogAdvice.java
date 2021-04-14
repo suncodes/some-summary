@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
  * TODO 注册成一个bean
  * 对于 AnnotationAspectJ 来说，只能使用 Advisor ，而不能使用 Advice
  * 可以根据运行结果，看出这个通知没有进行织入
+ * 结果：不生效
  */
 @Component
 @Slf4j
