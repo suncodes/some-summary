@@ -63,7 +63,11 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * 			4）、再给容器中注册实现了Ordered接口的BeanPostProcessor；
  * 			5）、注册没实现优先级接口的BeanPostProcessor；
  * 			6）、注册BeanPostProcessor，实际上就是创建BeanPostProcessor对象，保存在容器中；
- * 				创建internalAutoProxyCreator的BeanPostProcessor【AnnotationAwareAspectJAutoProxyCreator】
+ * 		        org.springframework.context.support.PostProcessorRegistrationDelegate#registerBeanPostProcessors
+ * 				<strong>
+ * 				    根据读取的配置类 MainConfigOfAOP，获取 EnableAspectJAutoProxy 注解，之后解析
+ * 				    创建internalAutoProxyCreator的BeanPostProcessor【AnnotationAwareAspectJAutoProxyCreator】
+ * 				</strong>
  * 				1）、创建Bean的实例
  * 				2）、populateBean；给bean的各种属性赋值
  * 				3）、initializeBean：初始化bean；
