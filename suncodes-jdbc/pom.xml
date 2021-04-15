@@ -92,12 +92,5 @@
             <version>1.2.3</version>
         </dependency>
         <!-- 日志相关依赖 end -->
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.4</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 </project>

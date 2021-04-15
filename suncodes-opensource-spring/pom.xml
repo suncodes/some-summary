@@ -13,6 +13,7 @@
 
     <properties>
         <spring.version>5.2.7.RELEASE</spring.version>
+        <mysql.version>8.0.18</mysql.version>
     </properties>
 
     <dependencies>
@@ -29,5 +30,19 @@
             <artifactId>aspectjweaver</artifactId>
             <version>1.9.6</version>
         </dependency>
+
+        <!-- 数据库相关依赖===start -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
+        </dependency>
+        <!-- 数据库相关依赖===end -->
     </dependencies>
 </project>

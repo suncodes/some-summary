@@ -55,6 +55,9 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  *
  * 流程：
  * 		1）、传入配置类，创建ioc容器
+ *           会读取配置文件的配置，以及一些注解，之后进行解析，
+ *           比如 EnableAspectJAutoProxy 注解需要注入 AnnotationAwareAspectJAutoProxyCreator，
+ *           则需要把对应的bean添加到Map中，后续 registerBeanPostProcessors 中进行注册后置处理器
  * 		2）、注册配置类，调用refresh（）刷新容器；
  * 		3）、registerBeanPostProcessors(beanFactory);注册bean的后置处理器来方便拦截bean的创建；
  * 			1）、先获取ioc容器已经定义了的需要创建对象的所有BeanPostProcessor

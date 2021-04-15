@@ -1190,6 +1190,262 @@ public class MainConfigOfAOP {
 #### 源码走读
 
 
+### 事务
+
+#### 入门
+
+（1）pom文件
+
+```xml
+        <!-- 数据库相关依赖===start -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
+        </dependency>
+        <!-- 数据库相关依赖===end -->
+```
+
+（2）数据库配置
+
+使用的是本地数据库 mysql，版本：8.0.18，数据库：trans
+
+表：bank
+
+| 列 | 类型 |
+| --- | --- |
+| id | int |
+| customer | varchar |
+| currentMoney | decimal |
+
+
+（3）创建对应实体类
+
+```java
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Customer {
+    private Integer id;
+    private String customerName;
+    private Integer currentMoney;
+}
+```
+
+（4）创建 DAO
+
+```java
+@Component
+public class CustomerDao {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    public void insert(Customer customer) {
+        String sql = "insert into bank(customerName, currentMoney) values (?, ?)";
+        jdbcTemplate.update(sql, customer.getCustomerName(), customer.getCurrentMoney());
+    }
+}
+```
+
+（5）创建 Service
+
+```java
+@Service
+public class CustomerService {
+
+    @Autowired
+    private CustomerDao customerDao;
+
+    @Transactional
+    public void insert(Customer customer) {
+        System.out.println("开始插入...");
+        customerDao.insert(customer);
+        int i = 1/0;
+        System.out.println("插入成功");
+    }
+}
+```
+
+（6）创建配置类（无事务）
+
+```java
+@ComponentScan(basePackages = "suncodes.opensource.tx")
+@Configuration
+public class TxConfig {
+
+    @Bean
+    DataSource dataSource() {
+        DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
+        driverManagerDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        driverManagerDataSource.setUrl("jdbc:mysql://localhost:3306/trans?serverTimezone=UTC");
+        driverManagerDataSource.setUsername("root");
+        driverManagerDataSource.setPassword("root");
+        return driverManagerDataSource;
+    }
+
+    @Bean
+    JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate();
+
+        jdbcTemplate.setDataSource(dataSource);
+        return jdbcTemplate;
+    }
+}
+```
+
+（7）测试（无事务）
+
+```java
+    @Test
+    public void f() {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(TxConfig.class);
+        CustomerService customerService = context.getBean(CustomerService.class);
+        Customer customer = new Customer();
+        customer.setCustomerName("sunchuizhe");
+        customer.setCurrentMoney(200);
+        customerService.insert(customer);
+    }
+```
+
+（8）添加事务
+
+```java
+@EnableTransactionManagement
+@ComponentScan(basePackages = "suncodes.opensource.tx")
+@Configuration
+public class TxConfig {
+
+    @Bean
+    DataSource dataSource() {
+        DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
+        driverManagerDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        driverManagerDataSource.setUrl("jdbc:mysql://localhost:3306/trans?serverTimezone=UTC");
+        driverManagerDataSource.setUsername("root");
+        driverManagerDataSource.setPassword("root");
+        return driverManagerDataSource;
+    }
+
+    @Bean
+    JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate();
+
+        jdbcTemplate.setDataSource(dataSource);
+        return jdbcTemplate;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(DataSource dataSource) throws Exception{
+        return new DataSourceTransactionManager(dataSource);
+    }
+}
+```
+
+（9）测试（有事务）
+
+同上
+
+其他：
+
+（1）控制台乱码
+
+打开IntelliJ IDEA>File>Setting>Editor>File Encodings，将Global Encoding、Project Encoding 设置 UTF8
+
+（2）有关 @Transactional 加在哪儿？
+
+目前的结构是这样的；
+
+service --> dao --> 调用 JDBCTemplate
+
+a）在service加@Transactional，且抛出异常，有效果
+
+b）在service加@Transactional，在dao抛异常，有效果
+
+c）在dao加@Transactional，在service抛出异常，没有效果
+
+d）在dao加@Transactional，在dao抛出异常，有效果
+
+所以，可以看出只要是在加了@Transactional的方法，内部出现异常以及有JDBC操作，都会进行回滚。
+
+加了@Transactional的方法，只有效于整个方法，以及方法内部调用的其他所有方法（默认其他方法没有其他@Transactional特殊处理）
+
+#### 复习
+略
+
+#### 原理
+
+- 要开启Spring事务需要添加注解@EnableTransactionManagement
+
+  - 通过注解的属性名称可以猜测属性的作用，具体逻辑在后续的代码实现中进行分析。通过这个注解可以看到是@Import(TransactionManagementConfigurationSelector.class)了一个类，因此直接看这个类。
+
+  - 在这个类中的selectImports方法，获取类上泛型类型（即EnableTransactionManagement），从当前正在注入的bean中的所有注解中获取EnableTransactionManagement注解的属性，从EnableTransactionManagement注解的属性获取mode属性值，根据不同的配置去注入不同的bean实现。
+
+  - 在注入容器registerBeanDefinitions时，当容器中不存在org.springframework.aop.config.internalAutoProxyCreator的时候默认注入InfrastructureAdvisorAutoProxyCreator的bean。
+
+- InfrastructureAdvisorAutoProxyCreator 则属于AOP的范畴了，这里暂时忽略其逻辑。
+
+  - 涉及到 AOP，就涉及到切面（切点+通知）和目标方法
+
+  - 事务的advisor是BeanFactoryTransactionAttributeSourceAdvisor
+
+  - 在 ProxyTransactionManagementConfiguration中，注入了BeanFactoryTransactionAttributeSourceAdvisor
+
+  - Spring的Advisor其实是组合了Pointcut和Advice而他们的具体实现分别是AnnotationTransactionAttributeSource和TransactionInterceptor。
+
+- TransactionAttributeSource虽然不是一个Pointcut，但是它被Pointcut所用，用于检测一个类的方法上是否有@Transactional注解，来确定该方法是否需要事物增强。
+
+  - TransactionAttributeSourcePointcut类以Pointcut结尾，说明它是一个切入点，就是标识要被拦截的方法。类名的前缀部分表明了这个切入点的实现原理。
+
+  - 看下这个前缀是TransactionAttributeSource，它以Source结尾，说明它是一个源（即源泉，有向外提供东西的意思）。它的前缀是TransactionAttribute，即事务属性。
+
+  - 由此可见，这个源可以向外提供事务属性，其实就是判断一个类的方法上是否标有@Transactional注解，如果有的话还可以获取这个注解的属性（即事务属性）。
+
+  - 整体来说就是，Pointcut拦截住了方法，然后使用这个“源”去方法和类上获取事务属性，如果能获取到，说明此方法需要参与事务，则进行事务增强，反之则不增强。
+
+- Advice就是AOP中的增强，TransactionInterceptor实现了Advice接口，所以它就是事务增强。
+
+  - TransactionInterceptor类调用的invokeWithinTransaction方法
+  
+  - 前两行获取事务属性“源”，再用这个“源”来获取事务属性。咦，有点奇怪，上面不是已经获取过了吗？是的，上面是在Pointcut里获取的，那只是用于判断那个方法是否要被拦截而已。这里获取的属性才是真正用于事务的。
+    
+    第三行是根据事务属性，来确定出一个事务管理器来。
+    
+    接下来是使用事务管理器打开事务。
+    
+    接下来是对被拦截住的目标方法的调用执行，当然要try/catch住这个执行。
+    
+    如果抛出了异常，则进行和异常相关的事务处理，然后将这个异常继续向上抛出。
+    
+    如果没有抛出异常，则进行事务提交。
+    
+    最后的else分支是对编程式事务的调用，事务的打开/提交/回滚是开发人员自己写代码控制，所以就不需要事务管理器操心了。
+
+
+    BeanFactoryTransactionAttributeSourceAdvisor：封装了实现事务所需的所有属性，包括Pointcut，Advice，TransactionManager以及一些其他的在Transactional注解中声明的属性；
+
+    TransactionAttributeSourcePointcut：用于判断哪些bean需要织入当前的事务逻辑。这里可想而知，其判断的基本逻辑就是判断其方法或类声明上有没有使用@Transactional注解，如果使用了就是需要织入事务逻辑的bean;
+
+    TransactionInterceptor：这个bean本质上是一个Advice，其封装了当前需要织入目标bean的切面逻辑，也就是Spring事务是如果借助于数据库事务来实现对目标方法的环绕的。
+
+
+
+
+#### 源码
+
+基于SpringBoot的Spring事务实现原理
+
+https://blog.csdn.net/jy00733505/article/details/107240787/
+
+
+
+
+
 
 
 
