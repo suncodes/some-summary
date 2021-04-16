@@ -1189,7 +1189,6 @@ public class MainConfigOfAOP {
 
 #### 源码走读
 
-
 ### 事务
 
 #### 入门
@@ -1442,9 +1441,74 @@ d）在dao加@Transactional，在dao抛出异常，有效果
 
 https://blog.csdn.net/jy00733505/article/details/107240787/
 
+### BeanFactoryPostProcessor
 
+#### 入门
 
+（1）继承 BeanFactoryPostProcessor，自定义实现类
 
+```java
+@Component
+public class MyBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+
+	@Override
+	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		System.out.println("MyBeanFactoryPostProcessor...postProcessBeanFactory...");
+		int count = beanFactory.getBeanDefinitionCount();
+		String[] names = beanFactory.getBeanDefinitionNames();
+		System.out.println("当前BeanFactory中有 " + count + " 个Bean");
+		for (String name : names) {
+			System.out.println(name);
+		}
+	}
+}
+```
+
+（2）配置成Bean
+
+```java
+@ComponentScan(basePackages = "suncodes.opensource.ext")
+@Configuration
+public class ExtConfig {
+}
+
+```
+
+（3）测试
+
+```java
+    @Test
+    public void myBeanFactoryPostProcessor() {
+        AnnotationConfigApplicationContext context  =
+                new AnnotationConfigApplicationContext(ExtConfig.class);
+        context.close();
+    }
+```
+
+#### 源码
+
+```
+BeanFactoryPostProcessor原理:
+1)、ioc容器创建对象
+2)、invokeBeanFactoryPostProcessors(beanFactory);
+		如何找到所有的BeanFactoryPostProcessor并执行他们的方法；
+			1）、直接在BeanFactory中找到所有类型是BeanFactoryPostProcessor的组件，并执行他们的方法
+			2）、在初始化创建其他组件前面执行
+
+2、BeanDefinitionRegistryPostProcessor extends BeanFactoryPostProcessor
+		postProcessBeanDefinitionRegistry();
+		在所有bean定义信息将要被加载，bean实例还未创建的；
+		优先于BeanFactoryPostProcessor执行；
+		利用BeanDefinitionRegistryPostProcessor给容器中再额外添加一些组件；
+	原理：
+		1）、ioc创建对象
+		2）、refresh()-》invokeBeanFactoryPostProcessors(beanFactory);
+		3）、从容器中获取到所有的BeanDefinitionRegistryPostProcessor组件。
+			1、依次触发所有的postProcessBeanDefinitionRegistry()方法
+			2、再来触发postProcessBeanFactory()方法BeanFactoryPostProcessor；
+		4）、再来从容器中找到BeanFactoryPostProcessor组件；然后依次触发postProcessBeanFactory()方法
+
+```
 
 
 
