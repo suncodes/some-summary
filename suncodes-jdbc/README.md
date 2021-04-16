@@ -291,3 +291,89 @@ public void xml() throws IOException {
             不要忘记在映射配置中告知mybatis要封装到哪个实体类中
             配置的方式：指定实体类的全限定类名
 
+### mybatis 注解方式
+
+（1）创建实体类
+
+略
+
+（2）创建 DAO
+
+```java
+public interface IUserDao {
+    /**
+     * 查询所有操作
+     * @return 用户列表
+     */
+    @Select("select * from user limit 1")
+    List<User> findAll();
+}
+```
+
+（3）配置文件
+
+mybatis/SqlMapConfigAnnotation.xml
+
+```xml
+    <mappers>
+        <!-- 任意一种 -->
+        <package name="suncodes.mybatis.annotation.dao"/>
+<!--        <mapper class="suncodes.mybatis.annotation.dao.IUserDao" />-->
+    </mappers>
+```
+
+注：如果 xml 和注解方式同时存在，则 xml 优先
+
+### mybatis 实现接口实现类方式
+
+（1）实体类
+
+（2）DAO 接口
+
+（3）实现类
+
+```java
+public class UserDaoImpl implements IUserDao {
+
+    private SqlSessionFactory sqlSessionFactory;
+
+    public UserDaoImpl(SqlSessionFactory sqlSessionFactory) {
+        this.sqlSessionFactory = sqlSessionFactory;
+    }
+
+    @Override
+    public List<User> findAll() {
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        List<User> users = sqlSession.selectList("suncodes.mybatis.impl.dao.IUserDao.findAll");
+        sqlSession.close();
+        return users;
+    }
+}
+```
+
+（4）配置文件
+
+（5）测试
+
+```java
+    @Test
+    public void xml() throws IOException {
+        // 1、读取配置文件
+        InputStream resourceAsStream = Resources.getResourceAsStream("mybatis/SqlMapConfigImpl.xml");
+        // 2、创建 SqlSessionFactory 工厂
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(resourceAsStream);
+        // 3、创建 SqlSession 对象
+//        SqlSession sqlSession = sqlSessionFactory.openSession();
+        // 4、创建代理对象
+        IUserDao userDao = new UserDaoImpl(sqlSessionFactory);
+        // 5、执行方法
+        List<User> userList = userDao.findAll();
+        for (User user : userList) {
+            System.out.println(user);
+        }
+        // 6、释放资源
+//        sqlSession.close();
+        resourceAsStream.close();
+    }
+```
+
