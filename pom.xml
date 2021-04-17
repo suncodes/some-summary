@@ -23,6 +23,7 @@
         <module>suncodes-jdbc-springboot</module>
         <module>suncodes-review-aop</module>
         <module>suncodes-opensource-spring</module>
+        <module>suncodes-mybatis</module>
     </modules>
 
     <properties>
