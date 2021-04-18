@@ -1,4 +1,4 @@
-package suncodes.mybatis;
+package mybatis;
 
 import com.alibaba.druid.pool.DruidDataSourceFactory;
 import org.apache.ibatis.io.Resources;

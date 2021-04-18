@@ -367,3 +367,42 @@ public class UserDaoImpl implements IUserDao {
     }
 ```
 
+### 自定义Mybatis框架
+
+（1）创建包，有关自定义的mybatis在design包下
+
+（2）引入相关坐标
+
+```xml
+<!-- 解析 xml 的 dom4j -->
+<dependency>
+    <groupId>dom4j</groupId>
+    <artifactId>dom4j</artifactId>
+    <version>1.6.1</version>
+</dependency>
+<!-- dom4j 的依赖包 jaxen -->
+<dependency>
+    <groupId>jaxen</groupId>
+    <artifactId>jaxen</artifactId>
+    <version>1.1.6</version>
+</dependency>
+```
+（3）编写SqlFactoryConfig.xml文件
+
+（4）实体类
+
+（5）Dao接口
+
+（6）对应的Mapper.xml文件
+
+以上文件基本和原来的一样，后续就是怎么进行解析xml，反射，代理。
+
+（7）定义一个Resources，用来记载Config文件，内部使用XMLConfigBuilder进行解析，解析成一个实体类Configuration进行保存信息。
+
+（8）Configuration用于保存Bean方法的全限定定名以及SQL语句的映射，还有就是数据库的连接信息等。
+
+（9）获取到了Config文件的信息了之后，就可以进行进行代理对象了。
+
+（10）通过配置获取Connect，之后通过getMapper获取接口类，之后通过动态代理，执行对应的SQL语句，获取结果。
+
+
