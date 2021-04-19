@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="suncodes.mybatis.crud.dao.IUserDao">
+    <!--配置查询所有-->
+    <select id="findAll" resultType="suncodes.mybatis.crud.domain.User">
+        select * from user
+    </select>
+
+    <!-- 保存用户 -->
+    <insert id="saveUser" parameterType="suncodes.mybatis.crud.domain.User">
+        insert into user(username,address,sex,birthday)
+        values(#{username}, #{address}, #{sex}, #{birthday})
+    </insert>
+
+    <!-- 更新用户 -->
+    <update id="updateUser" parameterType="suncodes.mybatis.crud.domain.User">
+        update user
+        set username=#{username},address=#{address},sex=#{sex},birthday=#{birthday}
+        where id = #{id}
+    </update>
+
+    <!-- 删除用户 -->
+    <delete id="deleteUser" parameterType="int">
+        delete from user
+        where id = #{hehe}
+    </delete>
+
+    <select id="selectById" parameterType="int" resultType="suncodes.mybatis.crud.domain.User">
+        select * from user
+        where id = #{ididid}
+    </select>
+
+    <select id="selectByName" parameterType="string" resultType="suncodes.mybatis.crud.domain.User">
+        select * from user
+        where username like #{name1}
+    </select>
+
+    <select id="selectByName2" parameterType="string" resultType="suncodes.mybatis.crud.domain.User">
+        select * from user
+        where username like '%${value}%'
+    </select>
+
+    <select id="countUser" resultType="int">
+        select count(*) from user
+    </select>
+
+    <insert id="insertAndGetId" parameterType="suncodes.mybatis.crud.domain.User">
+        <selectKey keyColumn="id" keyProperty="id" order="AFTER" resultType="int">
+            select last_insert_id();
+        </selectKey>
+            insert into user(username,address,sex,birthday)
+            values(#{username}, #{address}, #{sex}, #{birthday})
+    </insert>
+</mapper>
