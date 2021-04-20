@@ -1510,6 +1510,207 @@ BeanFactoryPostProcessor原理:
 
 ```
 
+### BeanDefinitionRegistryPostProcessor
+
+```java
+@Component
+public class MyBeanDefinitionRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor {
+    /**
+     * 先执行
+     * 此处是用于注册BeanDefinition的
+     * BeanDefinitionRegistry Bean定义信息的保存中心，
+     * 以后BeanFactory就是按照BeanDefinitionRegistry里面保存的每一个bean定义信息创建bean实例；
+     */
+    @Override
+    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+        System.out.println("============= MyBeanDefinitionRegistryPostProcessor.postProcessBeanDefinitionRegistry ============");
+        String[] beanDefinitionNames = registry.getBeanDefinitionNames();
+        for (String beanDefinitionName : beanDefinitionNames) {
+            System.out.println(beanDefinitionName);
+        }
+        RootBeanDefinition rootBeanDefinition = new RootBeanDefinition();
+        rootBeanDefinition.setBeanClass(ExtBean.class);
+        registry.registerBeanDefinition("hehe", rootBeanDefinition);
+    }
+
+    /**
+     * 后执行
+     * 此处是用于注册Bean的
+     * 注册bean之前需要有bean的描述信息BeanDefinition
+     * @param beanFactory
+     * @throws BeansException
+     */
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        System.out.println("============= MyBeanDefinitionRegistryPostProcessor.postProcessBeanFactory ============");
+        String[] beanDefinitionNames = beanFactory.getBeanDefinitionNames();
+        for (String beanDefinitionName : beanDefinitionNames) {
+            System.out.println(beanDefinitionName);
+        }
+        // 在调用registerSingleton之前不能调用beanFactory.getBean("hehe")，否则报错
+        // Could not register object [ExtBean(msg=这是我定义的Bean)] under bean name 'hehe': there is already object [ExtBean(msg=null)] bound
+        // 说Bean的名字已经和object对象进行绑定了
+        beanFactory.registerSingleton("hehe", new ExtBean("这是我定义的Bean"));
+        System.out.println(beanFactory.getBean("hehe"));
+    }
+}
+```
+
+### ApplicationListener
+
+https://blog.csdn.net/liyantianmin/article/details/81017960
+
+https://blog.csdn.net/baidu_19473529/article/details/97646739
+
+（1）入门
+
+a）自定义事件
+
+```java
+/**
+ * 自定义事件
+ * 应该就是通过不同的 ApplicationEvent 触发不同的事件，之后在监听器中处理不同的逻辑
+ * 那么触发的时机怎么控制？在不同的阶段，进行不同时间的调用，进行不同时间的触发
+ */
+@Getter
+@Setter
+@ToString
+public class MyApplicationEvent extends ApplicationEvent {
+
+    private String address;
+    private String text;
+
+    public MyApplicationEvent(Object source, String address, String text) {
+        super(source);
+        this.address = address;
+        this.text = text;
+    }
+
+    public MyApplicationEvent(Object source) {
+        super(source);
+    }
+}
+
+```
+
+b）自定义监听器
+
+```java
+@Component
+public class MyApplicationListener implements ApplicationListener {
+    @Override
+    public void onApplicationEvent(ApplicationEvent event) {
+        if (event instanceof MyApplicationEvent) {
+            // 不主动触发 context.publishEvent(myApplicationEvent) 不会被调用
+            MyApplicationEvent emailEvent = (MyApplicationEvent) event;
+            System.out.println("邮件地址：" + emailEvent.getAddress());
+            System.out.println("邮件内容：" + emailEvent.getText());
+        } else {
+            System.out.println("容器本身事件：" + event);
+        }
+    }
+}
+```
+
+c）触发事件
+
+```java
+    @Test
+    public void myBeanFactoryPostProcessor() {
+        AnnotationConfigApplicationContext context =
+                new AnnotationConfigApplicationContext(ExtConfig.class);
+        // 创建一个ApplicationEvent对象
+        MyApplicationEvent event = new MyApplicationEvent("hello", "abc@163.com", "This is a test");
+        // 主动触发该事件
+        context.publishEvent(event);
+        context.close();
+    }
+```
+
+（2）@EventListener入门
+
+```java
+@Component
+public class MyAtEventListener {
+
+    /**
+     * 注解方式和继承ApplicationListener方式的明显区别：
+     * 注解方式可以指定监听某个事件，其他事件是不需要关注的
+     */
+    @EventListener(classes = {MyApplicationEvent.class})
+    public void f() {
+        System.out.println(">>>>>>>>>>>>>>>>>>>");
+    }
+}
+
+```
+
+（3）源码
+
+```
+3、ApplicationListener：监听容器中发布的事件。事件驱动模型开发；
+	  public interface ApplicationListener<E extends ApplicationEvent>
+		监听 ApplicationEvent 及其下面的子事件；
+
+	 步骤：
+		1）、写一个监听器（ApplicationListener实现类）来监听某个事件（ApplicationEvent及其子类）
+			@EventListener;
+			原理：使用EventListenerMethodProcessor处理器来解析方法上的@EventListener；
+
+		2）、把监听器加入到容器；
+		3）、只要容器中有相关事件的发布，我们就能监听到这个事件；
+				ContextRefreshedEvent：容器刷新完成（所有bean都完全创建）会发布这个事件；
+				ContextClosedEvent：关闭容器会发布这个事件；
+		4）、发布一个事件：
+				applicationContext.publishEvent()；
+	
+ 原理：
+ 	ContextRefreshedEvent、IOCTest_Ext$1[source=我发布的时间]、ContextClosedEvent；
+ 1）、ContextRefreshedEvent事件：
+ 	1）、容器创建对象：refresh()；
+ 	2）、finishRefresh();容器刷新完成会发布ContextRefreshedEvent事件
+ 2）、自己发布事件；
+ 3）、容器关闭会发布ContextClosedEvent；
+ 
+ 【事件发布流程】：
+ 	3）、publishEvent(new ContextRefreshedEvent(this));
+ 			1）、获取事件的多播器（派发器）：getApplicationEventMulticaster()
+ 			2）、multicastEvent派发事件：
+ 			3）、获取到所有的ApplicationListener；
+ 				for (final ApplicationListener<?> listener : getApplicationListeners(event, type)) {
+ 				1）、如果有Executor，可以支持使用Executor进行异步派发；
+ 					Executor executor = getTaskExecutor();
+ 				2）、否则，同步的方式直接执行listener方法；invokeListener(listener, event);
+ 				 拿到listener回调onApplicationEvent方法；
+ 
+ 【事件多播器（派发器）】
+ 	1）、容器创建对象：refresh();
+ 	2）、initApplicationEventMulticaster();初始化ApplicationEventMulticaster；
+ 		1）、先去容器中找有没有id=“applicationEventMulticaster”的组件；
+ 		2）、如果没有this.applicationEventMulticaster = new SimpleApplicationEventMulticaster(beanFactory);
+ 			并且加入到容器中，我们就可以在其他组件要派发事件，自动注入这个applicationEventMulticaster；
+ 
+ 【容器中有哪些监听器】
+ 	1）、容器创建对象：refresh();
+ 	2）、registerListeners();
+ 		从容器中拿到所有的监听器，把他们注册到applicationEventMulticaster中；
+ 		String[] listenerBeanNames = getBeanNamesForType(ApplicationListener.class, true, false);
+ 		//将listener注册到ApplicationEventMulticaster中
+  		getApplicationEventMulticaster().addApplicationListenerBean(listenerBeanName);
+
+```
+
+（4）@EventListener源码
+
+```
+SmartInitializingSingleton 原理：->afterSingletonsInstantiated();
+		1）、ioc容器创建对象并refresh()；
+		2）、finishBeanFactoryInitialization(beanFactory);初始化剩下的单实例bean；
+			1）、先创建所有的单实例bean；getBean();
+			2）、获取所有创建好的单实例bean，判断是否是SmartInitializingSingleton类型的；
+				如果是就调用afterSingletonsInstantiated();
+```
+
 
 
 
