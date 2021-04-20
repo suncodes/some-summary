@@ -405,4 +405,95 @@ public class UserDaoImpl implements IUserDao {
 
 （10）通过配置获取Connect，之后通过getMapper获取接口类，之后通过动态代理，执行对应的SQL语句，获取结果。
 
+### mybatis的CRUD操作
+
+```
+
+（1）有关一些标签属性的含义
+parameterType：参数类型
+resultType：返回结果类型
+
+java的基本类型，map，string等类型都有对应的内置
+https://mybatis.org/mybatis-3/zh/configuration.html#typeAliases
+
+（2）有关mybatis自动提交
+需要设置 sqlSession.commit(); 不然不会自动提交的。
+
+（3）模糊查询四种的方式
+（1）username like #{name1} ， userDao.selectByName("%王%")
+（2）username like '%${name1}%'  ，userDao.selectByName("王")
+（3）username like concat('%', #{name1}, '%') ，userDao.selectByName("王")
+（3）username like concat('%', ${name1}, '%') ，userDao.selectByName("王")
+
+（4）获取自增id的两种方式
+（1）通过在insert标签
+    <insert id="saveUser" parameterType="suncodes.mybatis.crud.domain.User" 
+            keyProperty="id" keyColumn="id" useGeneratedKeys="true">
+        insert into user(username,address,sex,birthday)
+        values(#{username}, #{address}, #{sex}, #{birthday})
+    </insert>
+
+
+（2）通过selectKey
+    <insert id="insertAndGetId" parameterType="suncodes.mybatis.crud.domain.User">
+        <selectKey keyColumn="id" keyProperty="id" order="AFTER" resultType="int">
+            select last_insert_id();
+        </selectKey>
+            insert into user(username,address,sex,birthday)
+            values(#{username}, #{address}, #{sex}, #{birthday})
+    </insert>
+
+keyProperty：java对应的字段
+keyColumn：数据库对应字段
+resultType：字段类型
+
+```
+
+### 参数
+
+``` 
+OGNL表达式：
+	Object Graphic Navigation Language
+	对象	图	导航	   语言
+	
+	它是通过对象的取值方法来获取数据。在写法上把get给省略了。
+	比如：我们获取用户的名称
+		类中的写法：user.getUsername();
+		OGNL表达式写法：user.username
+	mybatis中为什么能直接写username,而不用user.呢：
+		因为在parameterType中已经提供了属性所属的类，所以此时不需要写对象名
+
+<insert id="insertUser" parameterType="User">
+  insert into users (id, username, password)
+  values (#{id}, #{username}, #{password})
+</insert>
+
+#{property,javaType=int,jdbcType=NUMERIC}
+和 MyBatis 的其它部分一样，几乎总是可以根据参数对象的类型确定 javaType，除非该对象是一个 HashMap。这个时候，你需要显式指定 javaType 来确保正确的类型处理器（TypeHandler）被使用。 
+
+大多时候，你只须简单指定属性名，顶多要为可能为空的列指定 jdbcType，其他的事情交给 MyBatis 自己去推断就行了。 
+#{firstName}
+#{middleInitial,jdbcType=VARCHAR}
+#{lastName}
+```
+
+### 结果映射
+
+``` 
+解决列名和属性名不一致的问题：
+（1）在sql语句中起别名
+（2）使用resultMap
+resultMap id="userResultMap" type="User">
+  <id property="id" column="user_id" />
+  <result property="username" column="user_name"/>
+  <result property="password" column="hashed_password"/>
+</resultMap>
+然后在引用它的语句中设置 resultMap 属性就行了（注意我们去掉了 resultType 属性）。比如:
+<select id="selectUsers" resultMap="userResultMap">
+  select user_id, user_name, hashed_password
+  from some_table
+  where id = #{id}
+</select>
+```
+
 

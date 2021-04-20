@@ -62,6 +62,7 @@ public class MybatisCrudTest {
         user.setAddress("zhengzhou");
         user.setBirthday(new Date(LocalDate.of(1995, 11, 3).toEpochDay()));
         userDao.saveUser(user);
+        System.out.println(user);
     }
 
     @Test

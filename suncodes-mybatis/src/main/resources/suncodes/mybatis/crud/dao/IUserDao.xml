@@ -9,7 +9,8 @@
     </select>
 
     <!-- 保存用户 -->
-    <insert id="saveUser" parameterType="suncodes.mybatis.crud.domain.User">
+    <insert id="saveUser" parameterType="suncodes.mybatis.crud.domain.User"
+            keyProperty="id" keyColumn="id" useGeneratedKeys="true">
         insert into user(username,address,sex,birthday)
         values(#{username}, #{address}, #{sex}, #{birthday})
     </insert>
@@ -39,7 +40,8 @@
 
     <select id="selectByName2" parameterType="string" resultType="suncodes.mybatis.crud.domain.User">
         select * from user
-        where username like '%${value}%'
+        where username like '%${value1}%'
+--         where username like concat('%', #{name1}, '%')
     </select>
 
     <select id="countUser" resultType="int">
