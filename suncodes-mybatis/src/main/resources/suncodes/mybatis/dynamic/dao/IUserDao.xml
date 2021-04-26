@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="suncodes.mybatis.dynamic.dao.IUserDao">
+
+    <sql id="he">
+        select * from user
+    </sql>
+
+    <!--配置查询所有-->
+    <select id="findAll" resultType="suncodes.mybatis.dynamic.domain.User">
+        <include refid="he"></include>
+    </select>
+
+    <select id="selectByUser" resultType="suncodes.mybatis.dynamic.domain.User" parameterType="suncodes.mybatis.dynamic.domain.User">
+        <include refid="he"></include>
+        where 1=1
+        <if test="username != null" >
+            and username=#{username}
+        </if>
+    </select>
+
+    <select id="selectByUser2" resultType="suncodes.mybatis.dynamic.domain.User" parameterType="suncodes.mybatis.dynamic.domain.User">
+        select * from user
+        <where>
+            <if test="username != null" >
+                username=#{username}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByIds" resultType="suncodes.mybatis.dynamic.domain.User">
+        select * from user
+        where id in
+        <!-- Available parameters are [arg0, collection, list] -->
+        <foreach collection="list" open="(" close=")" index="i" item="id" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="selectByIdAndName" resultType="suncodes.mybatis.dynamic.domain.User">
+        select * from user
+        where id in
+        <!-- 遍历map集合，必须使用Param注解，指定参数名称 -->
+        <foreach collection="a" open="(" close=")" index="i" item="id" separator=",">
+            #{i}
+        </foreach>
+    </select>
+</mapper>
