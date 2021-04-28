@@ -3,9 +3,10 @@
 - annotation：（2）使用SQL注解的方式
 - crud：（6）属性通过mybatis进行CRUD操作
 - design：（4）手写（bilibili）
-- dynamic：动态SQL语句（if，for...）
+- dynamic：（6）动态SQL语句（if，for...）
 - handwrite：（5）手写（视频）
 - impl：（3）通过selectOne方式
+- manytable: （7）多表查询
 - xml：（1）通过mapper xml配置的方式
 
 ## mybatis:

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="suncodes.mybatis.manytable.dao.IAccountDao">
+    <!--配置查询所有-->
+    <select id="findAll" resultType="suncodes.mybatis.manytable.domain.Account">
+        select * from account
+    </select>
+
+    <resultMap id="accountUser" type="suncodes.mybatis.manytable.domain.AccountUser">
+        <id property="id" column="account_id" />
+        <result property="uid" column="uid" />
+        <result property="money" column="money" />
+        <!-- property：属性，javaType：对应的java类型 -->
+        <association property="user" javaType="suncodes.mybatis.manytable.domain.User">
+            <id property="id" column="user_id"/>
+            <result property="username" column="username"/>
+            <result property="address" column="address" />
+            <result property="sex" column="sex"/>
+            <result property="birthday" column="birthday"/>
+        </association>
+    </resultMap>
+
+    <!-- 一对一，多对一 -->
+    <select id="selectAccountUser" resultMap="accountUser">
+        select a.id as account_id, uid, money, u.id as user_id, username, address, sex, birthday
+        from account a left join user u
+        on a.uid = u.id
+    </select>
+</mapper>
