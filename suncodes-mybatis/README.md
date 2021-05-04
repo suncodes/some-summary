@@ -6,6 +6,7 @@
 - dynamic：（6）动态SQL语句（if，for...）
 - handwrite：（5）手写（视频）
 - impl：（3）通过selectOne方式
+- lazy: （8）懒加载
 - manytable: （7）多表查询
 - xml：（1）通过mapper xml配置的方式
 

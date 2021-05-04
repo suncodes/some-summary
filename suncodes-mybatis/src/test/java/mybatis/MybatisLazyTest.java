@@ -7,16 +7,17 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import suncodes.mybatis.manytable.dao.IAccountDao;
-import suncodes.mybatis.manytable.dao.IUserDao;
-import suncodes.mybatis.manytable.domain.AccountUser;
-import suncodes.mybatis.manytable.domain.UserAccount;
+import suncodes.mybatis.lazy.dao.IAccountDao;
+import suncodes.mybatis.lazy.dao.IUserDao;
+import suncodes.mybatis.lazy.domain.AccountUser;
+import suncodes.mybatis.lazy.domain.UserAccount;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-public class ManyTableTest {
+public class MybatisLazyTest {
+
     private InputStream resourceAsStream;
 
     private SqlSession sqlSession;
@@ -24,7 +25,7 @@ public class ManyTableTest {
     @Before
     public void init() throws IOException {
         // 1、读取配置文件
-        resourceAsStream = Resources.getResourceAsStream("mybatis/SqlMapConfigManyTable.xml");
+        resourceAsStream = Resources.getResourceAsStream("mybatis/SqlMapConfigLazy.xml");
         // 2、创建 SqlSessionFactory 工厂
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(resourceAsStream);
         // 3、创建 SqlSession 对象
@@ -64,6 +65,24 @@ public class ManyTableTest {
     public void userAccount() {
         IUserDao mapper = sqlSession.getMapper(IUserDao.class);
         List<UserAccount> userAccounts = mapper.selectUserAccount();
+        for (UserAccount userAccount : userAccounts) {
+            System.out.println(userAccount);
+        }
+    }
+
+    @Test
+    public void accountUserLazy() {
+        IAccountDao mapper = sqlSession.getMapper(IAccountDao.class);
+        List<AccountUser> accountUsers = mapper.selectAccountUserLazy();
+        for (AccountUser accountUser : accountUsers) {
+            System.out.println(accountUser);
+        }
+    }
+
+    @Test
+    public void userAccountLazy() {
+        IUserDao mapper = sqlSession.getMapper(IUserDao.class);
+        List<UserAccount> userAccounts = mapper.selectUserAccountLazy();
         for (UserAccount userAccount : userAccounts) {
             System.out.println(userAccount);
         }

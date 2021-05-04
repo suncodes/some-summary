@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="suncodes.mybatis.lazy.dao.IAccountDao">
+    <!--配置查询所有-->
+    <select id="findAll" resultType="suncodes.mybatis.lazy.domain.Account">
+        select * from account
+    </select>
+
+    <resultMap id="accountUser" type="suncodes.mybatis.lazy.domain.AccountUser">
+        <id property="id" column="account_id" />
+        <result property="uid" column="uid" />
+        <result property="money" column="money" />
+        <!-- property：属性，javaType：对应的java类型 -->
+        <association property="user" javaType="suncodes.mybatis.lazy.domain.User">
+            <id property="id" column="user_id"/>
+            <result property="username" column="username"/>
+            <result property="address" column="address" />
+            <result property="sex" column="sex"/>
+            <result property="birthday" column="birthday"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="accountUserMap" type="suncodes.mybatis.lazy.domain.AccountUser">
+        <id property="id" column="account_id" />
+        <result property="uid" column="uid" />
+        <result property="money" column="money" />
+        <!-- property：属性，javaType：对应的java类型 -->
+        <!-- 一对一的关系映射：配置封装user的内容
+          select属性指定的内容：查询用户的唯一标识：
+          column属性指定的内容：用户根据id查询时，所需要的参数的值
+        -->
+        <association property="user" column="uid" javaType="suncodes.mybatis.lazy.domain.User"
+                     select="suncodes.mybatis.lazy.dao.IUserDao.selectById">
+            <id property="id" column="id"/>
+            <result property="username" column="username"/>
+            <result property="address" column="address" />
+            <result property="sex" column="sex"/>
+            <result property="birthday" column="birthday"/>
+        </association>
+    </resultMap>
+
+    <!-- 一对一，多对一 -->
+    <select id="selectAccountUser" resultMap="accountUser">
+        select a.id as account_id, uid, money, u.id as user_id, username, address, sex, birthday
+        from account a left join user u
+        on a.uid = u.id
+    </select>
+
+    <select id="selectByUserId" resultType="suncodes.mybatis.lazy.domain.Account">
+        select * from account where uid=#{uid}
+    </select>
+
+    <select id="selectAccountUserLazy" resultMap="accountUserMap">
+        select a.id as account_id, uid, money
+        from account a
+    </select>
+</mapper>
