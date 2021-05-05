@@ -1,6 +1,7 @@
 ## 目录结构
 
 - annotation：（2）使用SQL注解的方式
+- cache：一级缓存/二级缓存
 - crud：（6）属性通过mybatis进行CRUD操作
 - design：（4）手写（bilibili）
 - dynamic：（6）动态SQL语句（if，for...）
