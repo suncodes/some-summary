@@ -5,12 +5,12 @@ import suncodes.mybatis.spring.domain.User;
 
 import java.util.List;
 
-public class MybatisSpringTest {
+public class MybatisSpringSqlSessionTest {
 
     @Test
     public void f() {
         ClassPathXmlApplicationContext context =
-                new ClassPathXmlApplicationContext("MybatisSpringMapper.xml");
+                new ClassPathXmlApplicationContext("MybatisSpringSqlSession.xml");
         IUserDao userDao = context.getBean("userDao", IUserDao.class);
         List<User> users = userDao.findAll();
         for (User user : users) {
