@@ -24,6 +24,7 @@
         <module>suncodes-review-aop</module>
         <module>suncodes-opensource-spring</module>
         <module>suncodes-mybatis</module>
+        <module>suncodes-mybatis-spring</module>
     </modules>
 
     <properties>
