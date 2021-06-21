@@ -32,7 +32,11 @@
         <!-- create-drop：每次创建表后再删除 -->
         <!-- validate：校验xml配置和数据表的列是否一致 -->
         <property name="hbm2ddl.auto">update</property>
+
+        <!-- 设置数据库的隔离级别 -->
+        <property name="connection.isolation">2</property>
+        
         <!-- 指定 hbm.xml 文件位置 -->
-        <mapping resource="helloworld/hbm/News.hbm.xml"/>
+        <mapping resource="onecache/hbm/News.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>
