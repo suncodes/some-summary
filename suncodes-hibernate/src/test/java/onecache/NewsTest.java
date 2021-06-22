@@ -11,6 +11,8 @@ import org.junit.Before;
 import org.junit.Test;
 import suncodes.onecache.dao.News;
 
+import java.util.Date;
+
 public class NewsTest {
 
     private SessionFactory sessionFactory;
@@ -99,5 +101,114 @@ public class NewsTest {
         session.clear();
         News news2 = session.get(News.class, 1);
         System.out.println(news1 == news2);
+    }
+
+    /**
+     * 1. save() 方法
+     * 1). 使一个临时对象变为持久化对象
+     * 2). 在 flush 缓存时会发送一条 INSERT 语句.
+     * 3). 在 save 方法之前的 id 是无效的，但是不会报错，会自动按照自增的主键给对象重新分配一个id
+     * 5). 持久化对象的 ID 是不能被修改的!，会直接报错。
+     */
+    @Test
+    public void testSave() {
+        News news = new News();
+        // 无效，会自动分配id
+        news.setId(4);
+        news.setTitle("testSave");
+        news.setAuthor("scz");
+        news.setDate(new Date());
+        session.save(news);
+        // 此处程序报错
+        news.setId(10);
+    }
+
+    /**
+     * persist(): 也会执行 INSERT 操作
+     *
+     * 和 save() 的区别 :
+     * 在调用 persist 方法之前, 若对象已经有 id 了, 则不会执行 INSERT, 而抛出异常
+     */
+    @Test
+    public void testPersist(){
+        News news = new News();
+        news.setTitle("EE");
+        news.setAuthor("ee");
+        news.setDate(new Date());
+        news.setId(200);
+        // 直接报错
+        session.persist(news);
+    }
+
+    /**
+     * 1、功能：查询数据库，获取数据
+     * 2、当查询的数据库数据不存在的时候，返回 null
+     * 3、get 方法立即加载，不支持延迟加载策略
+     *
+     */
+    @Test
+    public void testGet(){
+        News news = session.get(News.class, 11);
+        // 测试是否支持延迟加载，看此句话和打印的 SQL 语句的先后顺序
+        System.out.println("-------------------");
+        System.out.println(news);
+    }
+
+    /**
+     * 1、功能：查询数据库，获取数据
+     * 2、当查询的数据库数据不存在的时候，抛出异常
+     * 3、load 方法支持延迟加载策略
+     *
+     */
+    @Test
+    public void testLoad(){
+
+        News news = session.load(News.class, 10);
+        // suncodes.onecache.dao.News$HibernateProxy$iYLcNTo6
+        System.out.println(news.getClass().getName());
+        // 测试是否支持延迟加载，看此句话和打印的 SQL 语句的先后顺序
+        System.out.println("-------------------------");
+        // 真正执行查询
+		System.out.println(news);
+    }
+
+    /**
+     * update:
+     * 1. 若更新一个持久化对象, 不需要显示的调用 update 方法. 因为在调用 Transaction
+     * 的 commit() 方法时, 会先执行 session 的 flush 方法.
+     * 2. 更新一个游离对象, 需要显式的调用 session 的 update 方法. 可以把一个游离对象
+     * 变为持久化对象
+     *
+     * 需要注意的:
+     * 1. 无论要更新的游离对象和数据表的记录是否一致, 都会发送 UPDATE 语句.
+     *    如何能让 update 方法不再盲目的出发 update 语句呢 ? 在 .hbm.xml 文件的 class 节点设置
+     *    select-before-update=true (默认为 false). 但通常不需要设置该属性.
+     *
+     * 2. 若数据表中没有对应的记录, 但还调用了 update 方法, 会抛出异常
+     *
+     * 3. 当 update() 方法关联一个游离对象时,
+     * 如果在 Session 的缓存中已经存在相同 OID 的持久化对象, 会抛出异常. 因为在 Session 缓存中
+     * 不能有两个 OID 相同的对象!
+     *
+     */
+    @Test
+    public void testUpdate(){
+        News news = session.get(News.class, 1);
+        // 目前：创建一个游离状态的对象
+        transaction.commit();
+        session.close();
+
+//		news.setId(100);
+
+        // 重新开启一个 Session
+        session = sessionFactory.openSession();
+        transaction = session.beginTransaction();
+
+//		news.setAuthor("SUN");
+
+        // 查询，把 news2 加入 Session 缓存
+        News news2 = session.get(News.class, 1);
+        // 执行更新操作，检查更新前缓存中是否有和 news 对象 一样的 oid，如果有，则报错
+        session.update(news);
     }
 }
