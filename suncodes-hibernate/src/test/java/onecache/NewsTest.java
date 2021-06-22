@@ -5,12 +5,16 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.jdbc.Work;
 import org.hibernate.service.ServiceRegistry;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import suncodes.onecache.dao.News;
 
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Date;
 
 public class NewsTest {
@@ -210,5 +214,76 @@ public class NewsTest {
         News news2 = session.get(News.class, 1);
         // 执行更新操作，检查更新前缓存中是否有和 news 对象 一样的 oid，如果有，则报错
         session.update(news);
+    }
+
+    /**
+     * 注意:
+     * 1. 若 OID 不为 null, 但数据表中还没有和其对应的记录. 会抛出一个异常.
+     * 2. 了解: OID 值等于 id 的 unsaved-value 属性值的对象, 也被认为是一个游离对象
+     */
+    @Test
+    public void testSaveOrUpdate(){
+        News news = new News("FFF", "fff", new Date());
+        news.setId(11);
+
+        session.saveOrUpdate(news);
+    }
+
+    /**
+     * delete: 执行删除操作. 只要 OID 和数据表中一条记录对应, 就会准备执行 delete 操作
+     * 若 OID 在数据表中没有对应的记录, 则抛出异常
+     *
+     * 可以通过设置 hibernate 配置文件 hibernate.use_identifier_rollback 为 true,
+     * 使删除对象后, 把其 OID 置为  null
+     */
+    @Test
+    public void testDelete(){
+//		News news = new News();
+//		news.setId(11);
+
+        News news = session.get(News.class, 163840);
+        session.delete(news);
+
+        System.out.println(news);
+    }
+
+    /**
+     * evict: 从 session 缓存中把指定的持久化对象移除
+     */
+    @Test
+    public void testEvict(){
+        News news1 = session.get(News.class, 1);
+        News news2 = session.get(News.class, 2);
+
+        news1.setTitle("AA");
+        news2.setTitle("BB");
+
+        session.evict(news1);
+    }
+
+    /**
+     * 调用 过程
+     * 1、创建过程
+     * CREATE DEFINER=`root`@`localhost` PROCEDURE `testProcedure`()
+     * BEGIN
+     * 	select * from news;
+     * 	insert into news(title,author,`date`) values('HHH','HHH',NOW());
+     * END
+     *
+     * 2、hibernate 没有直接操作过程的API，所以需要通过原生的JDBC
+     * Work 接口: 直接通过 JDBC API 来访问数据库的操作
+     */
+    @Test
+    public void testDoWork(){
+        session.doWork(new Work() {
+            @Override
+            public void execute(Connection connection) throws SQLException {
+                System.out.println(connection);
+                //调用存储过程.
+                String procedure = "{call testProcedure()}";
+                CallableStatement statement = connection.prepareCall(procedure);
+                statement.executeUpdate();
+            }
+        });
     }
 }
