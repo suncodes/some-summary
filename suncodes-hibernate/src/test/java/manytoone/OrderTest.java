@@ -41,7 +41,7 @@ public class OrderTest {
 
     @Test
     public void testDelete(){
-        //在不设定级联关系的情况下, 且 1 这一端的对象有 n 的对象在引用, 不能直接删除 1 这一端的对象
+        // 在不设定级联关系的情况下, 且 1 这一端的对象有 n 的对象在引用, 不能直接删除 1 这一端的对象
         Customer customer = session.get(Customer.class, 1);
         session.delete(customer);
     }
@@ -54,14 +54,15 @@ public class OrderTest {
 
     @Test
     public void testMany2OneGet(){
-        //1. 若查询多的一端的一个对象, 则默认情况下, 只查询了多的一端的对象. 而没有查询关联的
-        //1 的那一端的对象!
+        //1. 若查询多的一端的一个对象, 则默认情况下, 只查询了多的一端的对象. 而没有查询关联的 1 的那一端的对象!
         Order order = session.get(Order.class, 1);
         System.out.println(order.getOrderName());
 
         System.out.println(order.getCustomer().getClass().getName());
 
-        session.close();
+        // 不能关闭 session，因为对于多对一来说，是延迟加载查询
+        // 如果关闭 session，则会报异常
+//        session.close();
 
         //2. 在需要使用到关联的对象时, 才发送对应的 SQL 语句.
         Customer customer = order.getCustomer();
@@ -75,6 +76,15 @@ public class OrderTest {
 
     }
 
+    /**
+     * update
+     *         ORDERS
+     *     set
+     *         ORDER_NAME=?,
+     *         CUSTOMER_ID=?
+     *     where
+     *         ORDER_ID=?
+     */
     @Test
     public void testMany2OneSave(){
         Customer customer = new Customer();
@@ -90,13 +100,6 @@ public class OrderTest {
         order1.setCustomer(customer);
         order2.setCustomer(customer);
 
-        //执行  save 操作: 先插入 Customer, 再插入 Order, 3 条 INSERT
-        //先插入 1 的一端, 再插入 n 的一端, 只有 INSERT 语句.
-//		session.save(customer);
-//
-//		session.save(order1);
-//		session.save(order2);
-
         //先插入 Order, 再插入 Customer. 3 条 INSERT, 2 条 UPDATE
         //先插入 n 的一端, 再插入 1 的一端, 会多出 UPDATE 语句!
         //因为在插入多的一端时, 无法确定 1 的一端的外键值. 所以只能等 1 的一端插入后, 再额外发送 UPDATE 语句.
@@ -105,5 +108,47 @@ public class OrderTest {
         session.save(order2);
 
         session.save(customer);
+    }
+
+    /**
+     *     create table CUSTOMERS (
+     *        CUSTOMER_ID integer not null auto_increment,
+     *         CUSTOMER_NAME varchar(255),
+     *         primary key (CUSTOMER_ID)
+     *     ) engine=InnoDB
+     *
+     *     create table ORDERS (
+     *        ORDER_ID integer not null auto_increment,
+     *         ORDER_NAME varchar(255),
+     *         CUSTOMER_ID integer,
+     *         primary key (ORDER_ID)
+     *     ) engine=InnoDB
+     *
+     *     alter table ORDERS
+     *        add constraint FKflgddyesjyik2ro2p501yys8r
+     *        foreign key (CUSTOMER_ID)
+     *        references CUSTOMERS (CUSTOMER_ID)
+     */
+    @Test
+    public void testMany2OneSave1(){
+        Customer customer = new Customer();
+        customer.setCustomerName("AA");
+
+        Order order1 = new Order();
+        order1.setOrderName("ORDER-1");
+
+        Order order2 = new Order();
+        order2.setOrderName("ORDER-2");
+
+        //设定关联关系
+        order1.setCustomer(customer);
+        order2.setCustomer(customer);
+
+        //执行  save 操作: 先插入 Customer, 再插入 Order, 3 条 INSERT
+        //先插入 1 的一端, 再插入 n 的一端, 只有 INSERT 语句.
+		session.save(customer);
+
+		session.save(order1);
+		session.save(order2);
     }
 }
