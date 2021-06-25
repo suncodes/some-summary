@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+        <!-- 基本信息 -->
+        <property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="connection.url">jdbc:mysql://localhost:3306/hibernate?serverTimezone=UTC</property>
+        <property name="connection.username">root</property>
+        <property name="connection.password">root</property>
+
+        <!-- JDBC connection pool (use the built-in) -->
+        <property name="connection.pool_size">1</property>
+
+        <!-- SQL dialect 用的哪一个数据库 -->
+        <!--<property name="dialect">org.hibernate.dialect.MySQLInnoDBDialect</property>-->
+        <property name="dialect">org.hibernate.dialect.MySQL8Dialect</property>
+        <property name="dialect.storage_engine">innodb</property>
+
+        <!-- Disable the second-level cache  -->
+<!--        <property name="cache.provider_class">org.hibernate.cache.internal.NoCacheProvider</property>-->
+
+        <!-- 是否在控制台打印 SQL -->
+        <property name="show_sql">true</property>
+        <!-- 是否对 SQL 进行格式化 -->
+        <property name="format_sql">true</property>
+        <!-- 指定生成表的策略 取值 create | update | create-drop | validate -->
+        <!-- create：每次都会删除之前的表，新建表 -->
+        <!-- update：如果表不存在会新建，并插入数据，如果存在，则追加数据 -->
+        <!-- create-drop：每次创建表后再删除 -->
+        <!-- validate：校验xml配置和数据表的列是否一致 -->
+        <property name="hbm2ddl.auto">create</property>
+
+        <!-- 设置数据库的隔离级别 -->
+        <property name="connection.isolation">2</property>
+
+        <!-- 配置 C3P0 数据源 -->
+        <property name="hibernate.c3p0.max_size">10</property>
+        <property name="hibernate.c3p0.min_size">5</property>
+        <property name="c3p0.acquire_increment">2</property>
+
+        <property name="c3p0.idle_test_period">2000</property>
+        <property name="c3p0.timeout">2000</property>
+
+        <property name="c3p0.max_statements">10</property>
+
+        <!-- 设定 JDBC 的 Statement 读取数据的时候每次从数据库中取出的记录条数 -->
+        <property name="hibernate.jdbc.fetch_size">100</property>
+
+        <!-- 设定对数据库进行批量删除，批量更新和批量插入的时候的批次大小 -->
+        <property name="jdbc.batch_size">30</property>
+
+
+        <!-- 指定 hbm.xml 文件位置 -->
+        <mapping resource="extend/joined/hbm/Person.hbm.xml"/>
+    </session-factory>
+</hibernate-configuration>
