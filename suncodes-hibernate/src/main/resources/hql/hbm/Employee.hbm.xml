@@ -28,7 +28,8 @@
         </many-to-one>
         
     </class>
-    
+
+    <!--命名查询语句：Query query = session.getNamedQuery("salaryEmps");-->
     <query name="salaryEmps"><![CDATA[FROM Employee e WHERE e.salary > :minSal AND e.salary < :maxSal]]></query>
     
 </hibernate-mapping>
