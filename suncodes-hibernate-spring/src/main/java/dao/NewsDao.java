@@ -1,10 +1,12 @@
 package dao;
 
 import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import pojo.po.News;
 
 import java.util.List;
 
+@Transactional
 public class NewsDao {
 
     private HibernateTemplate template;

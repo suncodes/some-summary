@@ -137,6 +137,61 @@ public class NewsDao {
 }
 ```
 
+还有另外一种写法：就是继承 HibernateDaoSupport 
+
+```java
+@Transactional
+public class EmployeeDao extends HibernateDaoSupport {
+
+    /**
+     * method to save employee
+     */
+    public void saveEmployee(Employee e) {
+        getHibernateTemplate().save(e);
+    }
+
+    /**
+     * method to update employee
+     */
+    public void updateEmployee(Employee e) {
+        getHibernateTemplate().update(e);
+    }
+
+    /**
+     * method to delete employee
+     */
+    public void deleteEmployee(Employee e) {
+        getHibernateTemplate().delete(e);
+    }
+
+    /**
+     * method to return one employee of given id
+     */
+    public Employee getById(int id) {
+        Employee e = getHibernateTemplate().get(Employee.class, id);
+        return e;
+    }
+
+    /**
+     * method to return all employees
+     */
+    public List<Employee> getEmployees() {
+        List<Employee> list = new ArrayList<Employee>();
+        list = getHibernateTemplate().loadAll(Employee.class);
+        return list;
+    }
+}
+```
+
+同样在声明 bean 的时候，配置hibernateTemplate 或 sessionFactory
+
+```xml
+    <bean id="employeeDao" class="dao.EmployeeDao">
+        <property name="hibernateTemplate" ref="template"/>
+    <!--<property name="sessionFactory" ref="mySessionFactory"/>-->
+    </bean>
+```
+
 # 配置类
 application.xml
 
@@ -196,3 +251,15 @@ public class NewsTest {
 }
 ```
 
+# HibernateTemplate
+
+| No.  | Method                                          | Description                                                  |
+| :--- | :---------------------------------------------- | :----------------------------------------------------------- |
+| 1)   | void persist(Object entity)                     | persists the given object.                                   |
+| 2)   | Serializable save(Object entity)                | persists the given object and returns id.                    |
+| 3)   | void saveOrUpdate(Object entity)                | persists or updates the given object. If id is found, it updates the record otherwise saves the record. |
+| 4)   | void update(Object entity)                      | updates the given object.                                    |
+| 5)   | void delete(Object entity)                      | deletes the given object on the basis of id.                 |
+| 6)   | Object get(Class entityClass, Serializable id)  | returns the persistent object on the basis of given id.      |
+| 7)   | Object load(Class entityClass, Serializable id) | returns the persistent object on the basis of given id.      |
+| 8)   | List loadAll(Class entityClass)                 | returns the all the persistent objects.                      |
