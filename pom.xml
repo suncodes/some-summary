@@ -27,6 +27,7 @@
         <module>suncodes-mybatis-spring</module>
         <module>suncodes-hibernate</module>
         <module>suncodes-hibernate-spring</module>
+        <module>suncodes-hibernate-springboot</module>
     </modules>
 
     <properties>
