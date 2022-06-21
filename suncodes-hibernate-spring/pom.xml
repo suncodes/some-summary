@@ -12,7 +12,7 @@
     <artifactId>suncodes-hibernate-spring</artifactId>
 
     <properties>
-        <mysql.version>8.0.18</mysql.version>
+        <mysql.version>8.0.28</mysql.version>
         <spring.version>5.2.7.RELEASE</spring.version>
         <hibernate.version>5.5.2.Final</hibernate.version>
     </properties>
