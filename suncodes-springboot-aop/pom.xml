@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>suncodes-springboot-aop-xml</artifactId>
+    <artifactId>suncodes-springboot-aop</artifactId>
 
     <properties>
         <springboot.version>2.3.0.RELEASE</springboot.version>

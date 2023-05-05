@@ -31,10 +31,12 @@
         <module>suncodes-opensource-spring</module>
         <module>suncodes-mybatis</module>
         <module>suncodes-mybatis-spring</module>
+        <module>suncodes-mybatis-springboot</module>
         <module>suncodes-hibernate</module>
         <module>suncodes-hibernate-spring</module>
         <module>suncodes-hibernate-springboot</module>
         <module>suncodes-web-admin</module>
+        <module>suncodes-es</module>
     </modules>
 
     <properties>
