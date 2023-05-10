@@ -37,6 +37,7 @@
         <module>suncodes-hibernate-springboot</module>
         <module>suncodes-web-admin</module>
         <module>suncodes-es</module>
+        <module>suncodes-es-springboot</module>
     </modules>
 
     <properties>
